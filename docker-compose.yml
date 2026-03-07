@@ -1,0 +1,237 @@
+version: "3.9"
+
+services:
+  # ── Databases (one per service) ─────────────────────────────
+  staff-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: staff_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  manager-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: manager_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  customer-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  catalog-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  book-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: book_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  cart-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cart_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  order-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: order_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  ship-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ship_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  pay-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: pay_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  comment-rate-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: comment_rate_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  recommender-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: recommender_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  api-gateway-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: gateway_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  # ── Services ────────────────────────────────────────────────
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@api-gateway-db:5432/gateway_db
+      CUSTOMER_SERVICE_URL: http://customer-service:8000
+      BOOK_SERVICE_URL: http://book-service:8000
+      CART_SERVICE_URL: http://cart-service:8000
+      ORDER_SERVICE_URL: http://order-service:8000
+      REVIEW_SERVICE_URL: http://comment-rate-service:8000
+      RECOMMENDER_SERVICE_URL: http://recommender-ai-service:8000
+      CATALOG_SERVICE_URL: http://catalog-service:8000
+      STAFF_SERVICE_URL: http://staff-service:8000
+      MANAGER_SERVICE_URL: http://manager-service:8000
+    depends_on:
+      - staff-service
+      - manager-service
+      - customer-service
+      - catalog-service
+      - book-service
+      - cart-service
+      - order-service
+      - ship-service
+      - pay-service
+      - comment-rate-service
+      - recommender-ai-service
+      - api-gateway-db
+
+  staff-service:
+    build: ./staff-service
+    ports:
+      - "8081:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@staff-db:5432/staff_db
+    depends_on:
+      - staff-db
+
+  manager-service:
+    build: ./manager-service
+    ports:
+      - "8082:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@manager-db:5432/manager_db
+      CUSTOMER_SERVICE_URL: http://customer-service:8000
+      BOOK_SERVICE_URL: http://book-service:8000
+      ORDER_SERVICE_URL: http://order-service:8000
+      REVIEW_SERVICE_URL: http://comment-rate-service:8000
+    depends_on:
+      - manager-db
+
+  customer-service:
+    build: ./customer-service
+    ports:
+      - "8083:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@customer-db:5432/customer_db
+      CART_SERVICE_URL: http://cart-service:8000
+    depends_on:
+      - customer-db
+
+  catalog-service:
+    build: ./catalog-service
+    ports:
+      - "8084:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@catalog-db:5432/catalog_db
+    depends_on:
+      - catalog-db
+
+  book-service:
+    build: ./book-service
+    ports:
+      - "8085:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@book-db:5432/book_db
+      CATALOG_SERVICE_URL: http://catalog-service:8000
+    depends_on:
+      - book-db
+      - catalog-service
+
+  cart-service:
+    build: ./cart-service
+    ports:
+      - "8086:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@cart-db:5432/cart_db
+      BOOK_SERVICE_URL: http://book-service:8000
+    depends_on:
+      - cart-db
+      - book-service
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8087:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@order-db:5432/order_db
+      CART_SERVICE_URL: http://cart-service:8000
+      PAY_SERVICE_URL: http://pay-service:8000
+      SHIP_SERVICE_URL: http://ship-service:8000
+    depends_on:
+      - order-db
+      - cart-service
+      - pay-service
+      - ship-service
+
+  ship-service:
+    build: ./ship-service
+    ports:
+      - "8088:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@ship-db:5432/ship_db
+    depends_on:
+      - ship-db
+
+  pay-service:
+    build: ./pay-service
+    ports:
+      - "8089:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@pay-db:5432/pay_db
+    depends_on:
+      - pay-db
+
+  comment-rate-service:
+    build: ./comment-rate-service
+    ports:
+      - "8090:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@comment-rate-db:5432/comment_rate_db
+    depends_on:
+      - comment-rate-db
+
+  recommender-ai-service:
+    build: ./recommender-ai-service
+    ports:
+      - "8091:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@recommender-db:5432/recommender_db
+      ORDER_SERVICE_URL: http://order-service:8000
+      BOOK_SERVICE_URL: http://book-service:8000
+      REVIEW_SERVICE_URL: http://comment-rate-service:8000
+    depends_on:
+      - recommender-db
+      - order-service
+      - book-service
+      - comment-rate-service
