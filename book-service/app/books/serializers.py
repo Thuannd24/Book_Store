@@ -31,7 +31,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         stock = attrs.get('stock', getattr(self.instance, 'stock', 0))
-        status = attrs.get('status', getattr(self.instance, Book.Status.ACTIVE))
+        status = attrs.get('status', getattr(self.instance, 'status', Book.Status.ACTIVE))
         if stock == 0 and status == Book.Status.ACTIVE:
             attrs['status'] = Book.Status.OUT_OF_STOCK
         return attrs

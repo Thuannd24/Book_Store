@@ -7,84 +7,84 @@ services:
     environment:
       POSTGRES_DB: staff_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   manager-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: manager_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   customer-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: customer_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   catalog-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: catalog_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   book-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: book_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   cart-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: cart_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   order-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: order_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   ship-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: ship_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   pay-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: pay_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   comment-rate-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: comment_rate_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   recommender-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: recommender_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   api-gateway-db:
     image: postgres:15-alpine
     environment:
       POSTGRES_DB: gateway_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: "2604"
 
   # ── Services ────────────────────────────────────────────────
   api-gateway:
@@ -92,7 +92,7 @@ services:
     ports:
       - "8080:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@api-gateway-db:5432/gateway_db
+      DATABASE_URL: postgres://postgres:2604@api-gateway-db:5432/gateway_db
       CUSTOMER_SERVICE_URL: http://customer-service:8000
       BOOK_SERVICE_URL: http://book-service:8000
       CART_SERVICE_URL: http://cart-service:8000
@@ -121,7 +121,7 @@ services:
     ports:
       - "8081:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@staff-db:5432/staff_db
+      DATABASE_URL: postgres://postgres:2604@staff-db:5432/staff_db
     depends_on:
       - staff-db
 
@@ -130,7 +130,7 @@ services:
     ports:
       - "8082:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@manager-db:5432/manager_db
+      DATABASE_URL: postgres://postgres:2604@manager-db:5432/manager_db
       CUSTOMER_SERVICE_URL: http://customer-service:8000
       BOOK_SERVICE_URL: http://book-service:8000
       ORDER_SERVICE_URL: http://order-service:8000
@@ -143,7 +143,7 @@ services:
     ports:
       - "8083:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@customer-db:5432/customer_db
+      DATABASE_URL: postgres://postgres:2604@customer-db:5432/customer_db
       CART_SERVICE_URL: http://cart-service:8000
     depends_on:
       - customer-db
@@ -153,7 +153,7 @@ services:
     ports:
       - "8084:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@catalog-db:5432/catalog_db
+      DATABASE_URL: postgres://postgres:2604@catalog-db:5432/catalog_db
     depends_on:
       - catalog-db
 
@@ -162,7 +162,7 @@ services:
     ports:
       - "8085:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@book-db:5432/book_db
+      DATABASE_URL: postgres://postgres:2604@book-db:5432/book_db
       CATALOG_SERVICE_URL: http://catalog-service:8000
     depends_on:
       - book-db
@@ -173,7 +173,7 @@ services:
     ports:
       - "8086:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@cart-db:5432/cart_db
+      DATABASE_URL: postgres://postgres:2604@cart-db:5432/cart_db
       BOOK_SERVICE_URL: http://book-service:8000
     depends_on:
       - cart-db
@@ -184,7 +184,7 @@ services:
     ports:
       - "8087:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@order-db:5432/order_db
+      DATABASE_URL: postgres://postgres:2604@order-db:5432/order_db
       CART_SERVICE_URL: http://cart-service:8000
       PAY_SERVICE_URL: http://pay-service:8000
       SHIP_SERVICE_URL: http://ship-service:8000
@@ -199,7 +199,7 @@ services:
     ports:
       - "8088:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@ship-db:5432/ship_db
+      DATABASE_URL: postgres://postgres:2604@ship-db:5432/ship_db
     depends_on:
       - ship-db
 
@@ -208,7 +208,7 @@ services:
     ports:
       - "8089:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@pay-db:5432/pay_db
+      DATABASE_URL: postgres://postgres:2604@pay-db:5432/pay_db
     depends_on:
       - pay-db
 
@@ -217,7 +217,7 @@ services:
     ports:
       - "8090:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@comment-rate-db:5432/comment_rate_db
+      DATABASE_URL: postgres://postgres:2604@comment-rate-db:5432/comment_rate_db
     depends_on:
       - comment-rate-db
 
@@ -226,7 +226,7 @@ services:
     ports:
       - "8091:8000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@recommender-db:5432/recommender_db
+      DATABASE_URL: postgres://postgres:2604@recommender-db:5432/recommender_db
       ORDER_SERVICE_URL: http://order-service:8000
       BOOK_SERVICE_URL: http://book-service:8000
       REVIEW_SERVICE_URL: http://comment-rate-service:8000
