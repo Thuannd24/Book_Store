@@ -17,8 +17,8 @@ class Book(models.Model):
     stock = models.PositiveIntegerField(default=0)
     description = models.TextField(blank=True)
     image_url = models.URLField(blank=True)
-    category_id = models.IntegerField()
-    category_name_snapshot = models.CharField(max_length=255)
+    category_id = models.IntegerField(null=True, blank=True)
+    category_name_snapshot = models.CharField(max_length=255, blank=True, default='')
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
