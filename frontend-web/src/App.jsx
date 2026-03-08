@@ -24,6 +24,7 @@ import RecommendationPage from './pages/customer/RecommendationPage'
 import StaffLoginPage from './pages/staff/StaffLoginPage'
 import BookManagementPage from './pages/staff/BookManagementPage'
 import CategoryManagementPage from './pages/staff/CategoryManagementPage'
+import OrderManagementPage from './pages/staff/OrderManagementPage'
 
 // Manager pages
 import ManagerLoginPage from './pages/manager/ManagerLoginPage'
@@ -53,6 +54,7 @@ export default function App() {
         <Route index element={<Navigate to="/staff/books" replace />} />
         <Route path="books" element={<BookManagementPage />} />
         <Route path="categories" element={<CategoryManagementPage />} />
+        <Route path="orders" element={<OrderManagementPage />} />
       </Route>
 
       {/* Manager Routes */}

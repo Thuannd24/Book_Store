@@ -87,6 +87,50 @@ class OrderByCustomerView(APIView):
         return Response(OrderSerializer(orders, many=True).data)
 
 
+class OrderStatusUpdateView(APIView):
+    """
+    PATCH /api/orders/{order_id}/status/
+    Body: { "status": "SHIPPING" } or { "status": "DELIVERED" }
+    Allowed status transitions by staff:
+      CONFIRMED → SHIPPING → DELIVERED
+    """
+    ALLOWED_TRANSITIONS = {
+        'CONFIRMED': 'SHIPPING',
+        'SHIPPING': 'DELIVERED',
+    }
+
+    def patch(self, request, order_id):
+        try:
+            order = Order.objects.get(pk=order_id)
+        except Order.DoesNotExist:
+            return Response({'detail': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        new_status = request.data.get('status')
+        if not new_status:
+            return Response({'detail': 'status field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        allowed_next = self.ALLOWED_TRANSITIONS.get(order.status)
+        if allowed_next is None:
+            return Response(
+                {'detail': f'Order status "{order.status}" cannot be advanced further.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if new_status != allowed_next:
+            return Response(
+                {'detail': f'Cannot transition from {order.status} to {new_status}. Expected: {allowed_next}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order.status = new_status
+        if new_status == 'SHIPPING':
+            order.shipping_status = 'SHIPPING'
+        elif new_status == 'DELIVERED':
+            order.shipping_status = 'DELIVERED'
+        order.save(update_fields=['status', 'shipping_status'])
+
+        return Response(OrderSerializer(order).data)
+
+
 class PurchaseHistoryView(APIView):
     """
     GET /internal/orders/customer/{customer_id}/history/
