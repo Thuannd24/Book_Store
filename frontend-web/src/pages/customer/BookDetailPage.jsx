@@ -143,7 +143,7 @@ export default function BookDetailPage() {
                   <span className="text-xs text-gray-400">{formatDate(rev.created_at)}</span>
                 </div>
                 <p className="text-sm text-gray-700">{rev.comment}</p>
-                <p className="text-xs text-gray-400 mt-1">Customer #{rev.customer_id}</p>
+                <p className="text-xs text-gray-400 mt-1">Verified Buyer</p>
               </div>
             ))}
           </div>

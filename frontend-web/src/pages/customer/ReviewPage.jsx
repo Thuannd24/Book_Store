@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getBooks } from '../../api/books'
+import { getCustomerOrders } from '../../api/orders'
 import { getCustomerReviews, createReview } from '../../api/reviews'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/common/Button'
@@ -23,9 +23,22 @@ export default function ReviewPage() {
   const [formErrors, setFormErrors] = useState({})
 
   useEffect(() => {
-    Promise.all([getBooks(), getCustomerReviews(customer.id).catch(() => [])])
-      .then(([bks, revs]) => {
-        setBooks(bks)
+    Promise.all([
+      getCustomerOrders(customer.id).catch(() => []),
+      getCustomerReviews(customer.id).catch(() => []),
+    ])
+      .then(([orders, revs]) => {
+        const seen = new Set()
+        const purchasedBooks = []
+        for (const order of orders) {
+          for (const item of order.items || []) {
+            if (!seen.has(item.book_id)) {
+              seen.add(item.book_id)
+              purchasedBooks.push({ id: item.book_id, title: item.book_title_snapshot })
+            }
+          }
+        }
+        setBooks(purchasedBooks)
         setMyReviews(Array.isArray(revs) ? revs : [])
       })
       .catch((e) => setError(e.message))
