@@ -9,9 +9,9 @@ class RecommendationViewTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    @patch('recommender.services.fetch_ratings')
-    @patch('recommender.services.fetch_books')
-    @patch('recommender.services.fetch_purchase_history')
+    @patch('recommender.application.services.fetch_ratings')
+    @patch('recommender.application.services.fetch_books')
+    @patch('recommender.application.services.fetch_purchase_history')
     def test_recommendations_with_history(self, mock_history, mock_books, mock_ratings):
         mock_history.return_value = {'customer_id': 1, 'books': [{'book_id': 1, 'quantity': 2}]}
         mock_books.return_value = [
@@ -30,9 +30,9 @@ class RecommendationViewTests(TestCase):
         self.assertEqual(len(res.data['recommendations']), 2)
         self.assertEqual(res.data['recommendations'][0]['book_id'], 2)  # higher rating & same category
 
-    @patch('recommender.services.fetch_ratings', return_value=[])
-    @patch('recommender.services.fetch_books')
-    @patch('recommender.services.fetch_purchase_history', return_value={'customer_id': 2, 'books': []})
+    @patch('recommender.application.services.fetch_ratings', return_value=[])
+    @patch('recommender.application.services.fetch_books')
+    @patch('recommender.application.services.fetch_purchase_history', return_value={'customer_id': 2, 'books': []})
     def test_empty_history_uses_rating_and_stock(self, mock_history, mock_books, mock_ratings):
         mock_books.return_value = [
             {'id': 5, 'title': 'Top Rated', 'category_id': 30, 'stock': 2, 'status': 'ACTIVE'},
@@ -45,9 +45,9 @@ class RecommendationViewTests(TestCase):
         self.assertEqual(len(res.data['recommendations']), 1)
         self.assertEqual(res.data['recommendations'][0]['book_id'], 5)
 
-    @patch('recommender.services.fetch_purchase_history')
+    @patch('recommender.application.services.fetch_purchase_history')
     def test_upstream_error_returns_502(self, mock_history):
-        from recommender.services import ServiceError
+        from recommender.application.services import ServiceError
 
         mock_history.side_effect = ServiceError("upstream error")
 

@@ -1,5 +1,5 @@
 from django.urls import include, path
 
 urlpatterns = [
-    path('api/', include('recommender.urls')),
+    path('api/', include('recommender.interfaces.urls')),
 ]

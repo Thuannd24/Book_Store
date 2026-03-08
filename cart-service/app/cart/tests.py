@@ -64,7 +64,7 @@ class AddItemTest(TestCase):
         self.cart = Cart.objects.create(customer_id=10)
         self.url = '/api/carts/customer/10/items/'
 
-    @patch('cart.views.get_book_detail')
+    @patch('cart.interfaces.views.get_book_detail')
     def test_add_item_success(self, mock_book):
         mock_book.return_value = {'success': True, 'book': MOCK_BOOK}
         response = self.client.post(self.url, {'book_id': 1, 'quantity': 2}, format='json')
@@ -74,7 +74,7 @@ class AddItemTest(TestCase):
         self.assertEqual(len(response.data['items']), 1)
         self.assertEqual(response.data['items'][0]['book_title_snapshot'], 'Clean Code')
 
-    @patch('cart.views.get_book_detail')
+    @patch('cart.interfaces.views.get_book_detail')
     def test_add_same_book_increments_quantity(self, mock_book):
         mock_book.return_value = {'success': True, 'book': MOCK_BOOK}
         self.client.post(self.url, {'book_id': 1, 'quantity': 1}, format='json')
@@ -83,13 +83,13 @@ class AddItemTest(TestCase):
         self.assertEqual(CartItem.objects.count(), 1)
         self.assertEqual(response.data['total_items'], 4)
 
-    @patch('cart.views.get_book_detail')
+    @patch('cart.interfaces.views.get_book_detail')
     def test_add_item_book_service_down(self, mock_book):
         mock_book.return_value = {'success': False, 'error': 'book-service is unreachable'}
         response = self.client.post(self.url, {'book_id': 99, 'quantity': 1}, format='json')
         self.assertEqual(response.status_code, status.HTTP_502_BAD_GATEWAY)
 
-    @patch('cart.views.get_book_detail')
+    @patch('cart.interfaces.views.get_book_detail')
     def test_add_item_out_of_stock(self, mock_book):
         book = {**MOCK_BOOK, 'stock': 0, 'status': 'OUT_OF_STOCK'}
         mock_book.return_value = {'success': True, 'book': book}

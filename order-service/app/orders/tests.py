@@ -5,7 +5,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .models import Order, OrderItem
+from orders.infrastructure.orm_models import Order, OrderItem
 
 
 MOCK_CART = {
@@ -46,11 +46,11 @@ class OrderFlowTest(TestCase):
             "shipping_fee": "0.00",
         }
 
-    @patch('orders.saga.publish_event')
-    @patch('orders.saga.clear_cart')
-    @patch('orders.saga.create_shipment')
-    @patch('orders.saga.create_payment')
-    @patch('orders.saga.fetch_cart_for_order')
+    @patch('orders.application.services.publish_event')
+    @patch('orders.application.services.clear_cart')
+    @patch('orders.application.services.create_shipment')
+    @patch('orders.application.services.create_payment')
+    @patch('orders.application.services.fetch_cart_for_order')
     def test_create_order_success(self, mock_cart, mock_pay, mock_ship, mock_clear, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
         mock_pay.return_value = {"success": True, "payment": {"id": 1}}
@@ -63,9 +63,9 @@ class OrderFlowTest(TestCase):
         self.assertEqual(order.status, Order.Status.CONFIRMED)
         self.assertEqual(order.items.count(), 2)
 
-    @patch('orders.saga.publish_event')
-    @patch('orders.saga.create_payment')
-    @patch('orders.saga.fetch_cart_for_order')
+    @patch('orders.application.services.publish_event')
+    @patch('orders.application.services.create_payment')
+    @patch('orders.application.services.fetch_cart_for_order')
     def test_create_order_payment_fail(self, mock_cart, mock_pay, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
         mock_pay.return_value = {"success": False, "error": "pay failed"}
@@ -75,11 +75,11 @@ class OrderFlowTest(TestCase):
         order = Order.objects.get()
         self.assertEqual(order.status, Order.Status.FAILED)
 
-    @patch('orders.saga.publish_event')
-    @patch('orders.saga.cancel_payment')
-    @patch('orders.saga.create_shipment')
-    @patch('orders.saga.create_payment')
-    @patch('orders.saga.fetch_cart_for_order')
+    @patch('orders.application.services.publish_event')
+    @patch('orders.application.services.cancel_payment')
+    @patch('orders.application.services.create_shipment')
+    @patch('orders.application.services.create_payment')
+    @patch('orders.application.services.fetch_cart_for_order')
     def test_create_order_shipment_fail(self, mock_cart, mock_pay, mock_ship, mock_cancel, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
         mock_pay.return_value = {"success": True, "payment": {"id": 1}}

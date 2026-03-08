@@ -4,7 +4,7 @@ from unittest.mock import patch
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from customers.models import Customer
+from customers.infrastructure.orm_models import Customer
 
 
 class CustomerRegistrationTest(TestCase):
@@ -19,7 +19,7 @@ class CustomerRegistrationTest(TestCase):
             'address': '123 Le Loi, HCM',
         }
 
-    @patch('customers.views.create_cart_for_customer')
+    @patch('customers.interfaces.views.create_cart_for_customer')
     def test_register_success_cart_created(self, mock_cart):
         mock_cart.return_value = {'success': True}
         response = self.client.post(self.register_url, self.valid_payload, format='json')
@@ -31,7 +31,7 @@ class CustomerRegistrationTest(TestCase):
         self.assertNotIn('password_hash', response.data)
         mock_cart.assert_called_once()
 
-    @patch('customers.views.create_cart_for_customer')
+    @patch('customers.interfaces.views.create_cart_for_customer')
     def test_register_success_cart_failed(self, mock_cart):
         """Customer is created even when cart-service is down."""
         mock_cart.return_value = {'success': False, 'error': 'cart-service is unreachable'}
@@ -42,7 +42,7 @@ class CustomerRegistrationTest(TestCase):
         self.assertIn('warning', response.data)
         self.assertEqual(Customer.objects.count(), 1)
 
-    @patch('customers.views.create_cart_for_customer')
+    @patch('customers.interfaces.views.create_cart_for_customer')
     def test_register_duplicate_email(self, mock_cart):
         mock_cart.return_value = {'success': True}
         self.client.post(self.register_url, self.valid_payload, format='json')
