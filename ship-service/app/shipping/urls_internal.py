@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import InternalShipmentCreateView
+from .views import InternalShipmentCreateView, InternalShipmentCancelView
 
 urlpatterns = [
     path('shipments/', InternalShipmentCreateView.as_view(), name='internal-shipment-create'),
+    path('shipments/<int:shipment_id>/', InternalShipmentCancelView.as_view(), name='internal-shipment-cancel'),
 ]

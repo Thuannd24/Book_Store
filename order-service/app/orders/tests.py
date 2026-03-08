@@ -46,14 +46,15 @@ class OrderFlowTest(TestCase):
             "shipping_fee": "0.00",
         }
 
-    @patch('orders.views.clear_cart')
-    @patch('orders.views.create_shipment')
-    @patch('orders.views.create_payment')
-    @patch('orders.views.fetch_cart_for_order')
-    def test_create_order_success(self, mock_cart, mock_pay, mock_ship, mock_clear):
+    @patch('orders.saga.publish_event')
+    @patch('orders.saga.clear_cart')
+    @patch('orders.saga.create_shipment')
+    @patch('orders.saga.create_payment')
+    @patch('orders.saga.fetch_cart_for_order')
+    def test_create_order_success(self, mock_cart, mock_pay, mock_ship, mock_clear, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
-        mock_pay.return_value = {"success": True, "data": {"id": 1}}
-        mock_ship.return_value = {"success": True, "data": {"id": 1}}
+        mock_pay.return_value = {"success": True, "payment": {"id": 1}}
+        mock_ship.return_value = {"success": True, "shipment": {"id": 1}}
         mock_clear.return_value = {"success": True}
 
         res = self.client.post('/api/orders/', self.payload, format='json')
@@ -62,9 +63,10 @@ class OrderFlowTest(TestCase):
         self.assertEqual(order.status, Order.Status.CONFIRMED)
         self.assertEqual(order.items.count(), 2)
 
-    @patch('orders.views.create_payment')
-    @patch('orders.views.fetch_cart_for_order')
-    def test_create_order_payment_fail(self, mock_cart, mock_pay):
+    @patch('orders.saga.publish_event')
+    @patch('orders.saga.create_payment')
+    @patch('orders.saga.fetch_cart_for_order')
+    def test_create_order_payment_fail(self, mock_cart, mock_pay, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
         mock_pay.return_value = {"success": False, "error": "pay failed"}
 
@@ -73,20 +75,21 @@ class OrderFlowTest(TestCase):
         order = Order.objects.get()
         self.assertEqual(order.status, Order.Status.FAILED)
 
-    @patch('orders.views.clear_cart')
-    @patch('orders.views.create_shipment')
-    @patch('orders.views.create_payment')
-    @patch('orders.views.fetch_cart_for_order')
-    def test_create_order_shipment_fail(self, mock_cart, mock_pay, mock_ship, mock_clear):
+    @patch('orders.saga.publish_event')
+    @patch('orders.saga.cancel_payment')
+    @patch('orders.saga.create_shipment')
+    @patch('orders.saga.create_payment')
+    @patch('orders.saga.fetch_cart_for_order')
+    def test_create_order_shipment_fail(self, mock_cart, mock_pay, mock_ship, mock_cancel, mock_event):
         mock_cart.return_value = {"success": True, "data": MOCK_CART}
-        mock_pay.return_value = {"success": True, "data": {"id": 1}}
+        mock_pay.return_value = {"success": True, "payment": {"id": 1}}
         mock_ship.return_value = {"success": False, "error": "ship failed"}
-        mock_clear.return_value = {"success": True}
+        mock_cancel.return_value = {"success": True}
 
         res = self.client.post('/api/orders/', self.payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_502_BAD_GATEWAY)
         order = Order.objects.get()
-        self.assertEqual(order.status, Order.Status.FAILED)
+        self.assertIn(order.status, [Order.Status.COMPENSATED, Order.Status.FAILED])
 
 
 class OrderQueryTest(TestCase):

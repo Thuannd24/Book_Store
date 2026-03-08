@@ -1,25 +1,31 @@
 from decimal import Decimal
 from collections import defaultdict
 
-from django.db import transaction
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.db import connection
+
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, CreateOrderSerializer
-from .services import (
-    fetch_cart_for_order,
-    clear_cart,
-    create_payment,
-    create_shipment,
-)
+from .saga import OrderSaga
 
 
 @api_view(['GET'])
 def health(request):
-    return Response({'status': 'ok', 'service': 'order-service'})
+    db_ok = True
+    try:
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+    return Response({
+        'status': 'ok' if db_ok else 'degraded',
+        'service': 'order-service',
+        'db': 'ok' if db_ok else 'error',
+        'version': '2.0.0',
+    }, status=200 if db_ok else 503)
 
 
 class OrderCreateView(APIView):
@@ -39,85 +45,21 @@ class OrderCreateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = serializer.validated_data
-        customer_id = data['customer_id']
-        payment_method = data['payment_method']
-        shipping_method = data['shipping_method']
-        shipping_address = data['shipping_address']
-        shipping_fee = Decimal(str(data.get('shipping_fee', '0.00')))
+        saga = OrderSaga(
+            customer_id=data['customer_id'],
+            payment_method=data['payment_method'],
+            shipping_method=data['shipping_method'],
+            shipping_address=data['shipping_address'],
+            shipping_fee=data.get('shipping_fee', '0.00'),
+        )
 
-        # Fetch cart snapshot
-        cart_resp = fetch_cart_for_order(customer_id)
-        if not cart_resp['success']:
-            return Response(
-                {'detail': 'Unable to fetch cart.', 'error': cart_resp.get('error')},
-                status=status.HTTP_502_BAD_GATEWAY,
-            )
+        order, error, http_status = saga.run()
 
-        cart = cart_resp['data']
-        items = cart.get('items', [])
-        if not items:
-            return Response({'detail': 'Cart is empty.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        total_amount = Decimal(str(cart['total_amount'])) + shipping_fee
-
-        with transaction.atomic():
-            order = Order.objects.create(
-                customer_id=customer_id,
-                cart_id=cart['id'],
-                status=Order.Status.CREATED,
-                payment_method=payment_method,
-                shipping_method=shipping_method,
-                shipping_address=shipping_address,
-                total_amount=total_amount,
-                payment_status='PENDING',
-                shipping_status='PENDING',
-            )
-
-            order_items = []
-            for item in items:
-                order_items.append(OrderItem(
-                    order=order,
-                    book_id=item['book_id'],
-                    book_title_snapshot=item['book_title_snapshot'],
-                    price_snapshot=Decimal(str(item['price_snapshot'])),
-                    quantity=item['quantity'],
-                    subtotal=Decimal(str(item['subtotal'])),
-                ))
-            OrderItem.objects.bulk_create(order_items)
-
-            # Call payment
-            pay_resp = create_payment(order.id, customer_id, payment_method, total_amount)
-            if pay_resp['success']:
-                order.status = Order.Status.PAYMENT_CREATED
-                order.payment_status = 'CREATED'
-            else:
-                order.status = Order.Status.FAILED
-                order.payment_status = 'FAILED'
-                order.save()
-                return Response(
-                    {'detail': 'Payment creation failed', 'order': OrderSerializer(order).data, 'error': pay_resp.get('error')},
-                    status=status.HTTP_502_BAD_GATEWAY,
-                )
-
-            # Call shipment
-            ship_resp = create_shipment(order.id, customer_id, shipping_method, shipping_address, shipping_fee)
-            if ship_resp['success']:
-                order.status = Order.Status.SHIPMENT_CREATED
-                order.shipping_status = 'CREATED'
-            else:
-                order.status = Order.Status.FAILED
-                order.shipping_status = 'FAILED'
-                order.save()
-                return Response(
-                    {'detail': 'Shipment creation failed', 'order': OrderSerializer(order).data, 'error': ship_resp.get('error')},
-                    status=status.HTTP_502_BAD_GATEWAY,
-                )
-
-            order.status = Order.Status.CONFIRMED
-            order.save()
-
-        # Clear cart (best-effort, outside atomic)
-        clear_cart(customer_id)
+        if error:
+            resp_data = {'detail': error}
+            if order is not None:
+                resp_data['order'] = OrderSerializer(order).data
+            return Response(resp_data, status=http_status)
 
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 

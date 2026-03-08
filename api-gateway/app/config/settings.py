@@ -22,6 +22,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'gateway.middleware.RequestLoggingMiddleware',
+    'gateway.middleware.RateLimitMiddleware',
+    'gateway.middleware.JWTAuthMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
 
@@ -60,6 +63,30 @@ RECOMMENDER_SERVICE_URL = env('RECOMMENDER_SERVICE_URL', default='http://recomme
 CATALOG_SERVICE_URL = env('CATALOG_SERVICE_URL', default='http://catalog-service:8000')
 STAFF_SERVICE_URL = env('STAFF_SERVICE_URL', default='http://staff-service:8000')
 MANAGER_SERVICE_URL = env('MANAGER_SERVICE_URL', default='http://manager-service:8000')
+AUTH_SERVICE_URL = env('AUTH_SERVICE_URL', default='http://auth-service:8000')
+
+# Feature flags
+JWT_AUTH_ENABLED = env.bool('JWT_AUTH_ENABLED', default=False)
+RATE_LIMIT_ENABLED = env.bool('RATE_LIMIT_ENABLED', default=False)
+
+# Cache (Redis or LocMem fallback)
+REDIS_URL = env('REDIS_URL', default='')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        }
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'

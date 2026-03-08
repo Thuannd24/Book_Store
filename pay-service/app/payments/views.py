@@ -12,7 +12,18 @@ from .serializers import PaymentSerializer, InternalPaymentSerializer
 
 @api_view(['GET'])
 def health(request):
-    return Response({'status': 'ok', 'service': 'pay-service'})
+    db_ok = True
+    try:
+        from django.db import connection
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+    return Response({
+        'status': 'ok' if db_ok else 'degraded',
+        'service': 'pay-service',
+        'db': 'ok' if db_ok else 'error',
+        'version': '2.0.0',
+    }, status=200 if db_ok else 503)
 
 
 def _generate_tx_ref(order_id: int, seq: int) -> str:
@@ -61,6 +72,23 @@ class InternalPaymentCreateView(APIView):
 
         payload = InternalPaymentSerializer(payment).data
         return Response({'success': True, 'payment': payload}, status=status.HTTP_201_CREATED)
+
+
+class InternalPaymentCancelView(APIView):
+    """
+    DELETE /internal/payments/{payment_id}/
+    Cancels a payment (saga compensation).
+    """
+
+    def delete(self, request, payment_id):
+        try:
+            payment = Payment.objects.get(pk=payment_id)
+        except Payment.DoesNotExist:
+            return Response({'success': False, 'error': 'Payment not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        payment.status = Payment.Status.FAILED
+        payment.save(update_fields=['status'])
+        return Response({'success': True, 'payment_id': payment_id}, status=status.HTTP_200_OK)
 
 
 class PaymentDetailView(APIView):

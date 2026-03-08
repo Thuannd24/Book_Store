@@ -43,6 +43,16 @@ def create_payment(order_id: int, customer_id: int, method: str, amount: str) ->
     return _request_json('POST', url, json=payload)
 
 
+def cancel_payment(payment_id: int) -> Dict[str, Any]:
+    url = f"{settings.PAY_SERVICE_URL}/internal/payments/{payment_id}/"
+    return _request_json('DELETE', url)
+
+
+def cancel_shipment(shipment_id: int) -> Dict[str, Any]:
+    url = f"{settings.SHIP_SERVICE_URL}/internal/shipments/{shipment_id}/"
+    return _request_json('DELETE', url)
+
+
 def create_shipment(order_id: int, customer_id: int, shipping_method: str, shipping_address: str, shipping_fee: str) -> Dict[str, Any]:
     url = f"{settings.SHIP_SERVICE_URL}/internal/shipments/"
     payload = {

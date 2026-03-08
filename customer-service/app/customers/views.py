@@ -18,7 +18,18 @@ from .services import create_cart_for_customer
 
 @api_view(['GET'])
 def health(request):
-    return Response({'status': 'ok', 'service': 'customer-service'})
+    db_ok = True
+    try:
+        from django.db import connection
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+    return Response({
+        'status': 'ok' if db_ok else 'degraded',
+        'service': 'customer-service',
+        'db': 'ok' if db_ok else 'error',
+        'version': '2.0.0',
+    }, status=200 if db_ok else 503)
 
 class CustomerListView(APIView):
     """
