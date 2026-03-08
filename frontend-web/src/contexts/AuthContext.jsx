@@ -33,11 +33,19 @@ export function AuthProvider({ children }) {
 
   /**
    * Called after successful auth-service login.
-   * data: { access, refresh, user: { id, email, role, full_name } }
+   * auth-service returns: { access, refresh, user_id, email, role }
+   * Normalizes to user object: { id, email, role, full_name }
    */
   const loginWithTokens = useCallback((data) => {
-    saveTokens({ access: data.access, refresh: data.refresh, user: data.user })
-    setAuthUser(data.user)
+    // Support both { user: {...} } and flat { user_id, email, role } shapes
+    const user = data.user ?? {
+      id: data.user_id,
+      email: data.email,
+      role: data.role,
+      full_name: data.full_name || data.email,
+    }
+    saveTokens({ access: data.access, refresh: data.refresh, user })
+    setAuthUser(user)
   }, [])
 
   const logout = useCallback(async () => {
