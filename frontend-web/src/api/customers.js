@@ -11,3 +11,7 @@ export const getCustomer = (customerId) =>
 // Update customer profile
 export const updateCustomer = (customerId, data) =>
   api.put(`/gateway/customers/api/customers/${customerId}/`, data).then((r) => r.data)
+
+// List all active customers (manager use)
+export const getCustomerList = () =>
+  api.get('/gateway/customers/api/customers/').then((r) => (Array.isArray(r.data) ? r.data : []))

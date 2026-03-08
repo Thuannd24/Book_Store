@@ -15,3 +15,7 @@ export const getBookRating = (bookId) =>
 // Get reviews by a customer
 export const getCustomerReviews = (customerId) =>
   api.get(`/gateway/reviews/api/reviews/customer/${customerId}/`).then((r) => r.data)
+
+// Get average ratings for all books (for manager/staff display)
+export const getBooksSummaryAverages = () =>
+  api.get('/gateway/reviews/api/reviews/books/summary/averages/').then((r) => (Array.isArray(r.data) ? r.data : []))

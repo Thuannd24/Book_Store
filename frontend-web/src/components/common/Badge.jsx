@@ -17,14 +17,29 @@ export function Badge({ children, color = 'gray' }) {
 
 export const ORDER_STATUS_COLOR = {
   CREATED: 'blue',
+  PENDING: 'gray',
   PAYMENT_CREATED: 'yellow',
+  PAYMENT_RESERVED: 'yellow',
   SHIPMENT_CREATED: 'purple',
+  SHIPMENT_RESERVED: 'purple',
   CONFIRMED: 'green',
+  SHIPPING: 'indigo',
+  DELIVERED: 'green',
   FAILED: 'red',
+  COMPENSATING: 'red',
+  COMPENSATED: 'red',
 }
 
 export const PAYMENT_STATUS_COLOR = {
   PENDING: 'yellow',
   SUCCESS: 'green',
+  FAILED: 'red',
+}
+
+export const SHIPMENT_STATUS_COLOR = {
+  PENDING: 'yellow',
+  RESERVED: 'blue',
+  SHIPPING: 'indigo',
+  DELIVERED: 'green',
   FAILED: 'red',
 }

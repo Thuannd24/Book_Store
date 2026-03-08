@@ -7,3 +7,7 @@ export const registerManager = (data) =>
 // Get manager dashboard summary
 export const getDashboardSummary = () =>
   api.get('/gateway/managers/api/manager/dashboard/summary/').then((r) => r.data)
+
+// Get manager profile
+export const getManager = (managerId) =>
+  api.get(`/gateway/managers/api/managers/${managerId}/`).then((r) => r.data)

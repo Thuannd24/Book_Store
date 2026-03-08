@@ -19,6 +19,7 @@ import CheckoutPage from './pages/customer/CheckoutPage'
 import OrderHistoryPage from './pages/customer/OrderHistoryPage'
 import ReviewPage from './pages/customer/ReviewPage'
 import RecommendationPage from './pages/customer/RecommendationPage'
+import ProfilePage from './pages/customer/ProfilePage'
 
 // Staff pages
 import StaffLoginPage from './pages/staff/StaffLoginPage'
@@ -29,6 +30,7 @@ import OrderManagementPage from './pages/staff/OrderManagementPage'
 // Manager pages
 import ManagerLoginPage from './pages/manager/ManagerLoginPage'
 import DashboardPage from './pages/manager/DashboardPage'
+import CustomerListPage from './pages/manager/CustomerListPage'
 
 export default function App() {
   return (
@@ -46,6 +48,7 @@ export default function App() {
         <Route path="/orders/:id" element={<RequireCustomer><OrderHistoryPage /></RequireCustomer>} />
         <Route path="/reviews" element={<RequireCustomer><ReviewPage /></RequireCustomer>} />
         <Route path="/recommendations" element={<RequireCustomer><RecommendationPage /></RequireCustomer>} />
+        <Route path="/profile" element={<RequireCustomer><ProfilePage /></RequireCustomer>} />
       </Route>
 
       {/* Staff Routes */}
@@ -62,6 +65,7 @@ export default function App() {
       <Route path="/manager" element={<RequireManager><ManagerLayout /></RequireManager>}>
         <Route index element={<Navigate to="/manager/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="customers" element={<CustomerListPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

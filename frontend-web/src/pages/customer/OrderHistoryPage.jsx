@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { getCustomerOrders, getOrder } from '../../api/orders'
+import { getPaymentsByOrder } from '../../api/payments'
+import { getShipmentsByOrder } from '../../api/shipments'
 import { useAuth } from '../../contexts/AuthContext'
 import { Spinner, LoadingPage } from '../../components/common/Spinner'
 import { EmptyState } from '../../components/common/EmptyState'
 import { ErrorPage } from '../../components/common/ErrorBanner'
-import { Badge, ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR } from '../../components/common/Badge'
+import { Badge, ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, SHIPMENT_STATUS_COLOR } from '../../components/common/Badge'
 import { formatCurrency, formatDate } from '../../utils/format'
 
 // Order list
@@ -78,12 +80,22 @@ function OrderList() {
 // Single order detail
 function OrderDetail({ orderId }) {
   const [order, setOrder] = useState(null)
+  const [payments, setPayments] = useState([])
+  const [shipments, setShipments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getOrder(orderId)
-      .then(setOrder)
+    Promise.all([
+      getOrder(orderId),
+      getPaymentsByOrder(orderId).catch(() => []),
+      getShipmentsByOrder(orderId).catch(() => []),
+    ])
+      .then(([ord, pays, ships]) => {
+        setOrder(ord)
+        setPayments(pays)
+        setShipments(ships)
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [orderId])
@@ -140,6 +152,70 @@ function OrderDetail({ orderId }) {
           <span className="text-indigo-700">{formatCurrency(order.total_amount)}</span>
         </div>
       </div>
+
+      {/* Payment Info */}
+      {payments.length > 0 && (
+        <div className="bg-white rounded-2xl border p-6">
+          <h3 className="font-semibold text-gray-700 mb-4 text-sm">💳 Payment Details</h3>
+          {payments.map((pay) => (
+            <div key={pay.id} className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Status</span>
+                <Badge color={PAYMENT_STATUS_COLOR[pay.status] || 'gray'}>{pay.status}</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Method</span>
+                <span className="font-medium">{pay.method}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Amount</span>
+                <span className="font-medium">{formatCurrency(pay.amount)}</span>
+              </div>
+              {pay.transaction_ref && (
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Transaction Ref</span>
+                  <span className="font-mono text-xs text-gray-600">{pay.transaction_ref}</span>
+                </div>
+              )}
+              {pay.paid_at && (
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Paid At</span>
+                  <span className="text-gray-600">{formatDate(pay.paid_at)}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Shipment Info */}
+      {shipments.length > 0 && (
+        <div className="bg-white rounded-2xl border p-6">
+          <h3 className="font-semibold text-gray-700 mb-4 text-sm">🚚 Shipment Tracking</h3>
+          {shipments.map((ship) => (
+            <div key={ship.id} className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Status</span>
+                <Badge color={SHIPMENT_STATUS_COLOR[ship.status] || 'gray'}>{ship.status}</Badge>
+              </div>
+              {ship.tracking_code && (
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Tracking Code</span>
+                  <span className="font-mono text-indigo-700 font-semibold">{ship.tracking_code}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-gray-400">Method</span>
+                <span className="font-medium">{ship.shipping_method}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Fee</span>
+                <span className="font-medium">{formatCurrency(ship.shipping_fee)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
