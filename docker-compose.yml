@@ -85,7 +85,6 @@ services:
       POSTGRES_DB: gateway_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "2604"
-
   # ── Services ────────────────────────────────────────────────
   api-gateway:
     build: ./api-gateway
@@ -102,6 +101,7 @@ services:
       CATALOG_SERVICE_URL: http://catalog-service:8000
       STAFF_SERVICE_URL: http://staff-service:8000
       MANAGER_SERVICE_URL: http://manager-service:8000
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000,http://35.175.245.212,http://35.175.245.212:3000,http://35.175.245.212:8080  
     depends_on:
       - staff-service
       - manager-service
@@ -230,8 +230,28 @@ services:
       ORDER_SERVICE_URL: http://order-service:8000
       BOOK_SERVICE_URL: http://book-service:8000
       REVIEW_SERVICE_URL: http://comment-rate-service:8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     depends_on:
       - recommender-db
       - order-service
       - book-service
       - comment-rate-service
+  frontend:
+    build:
+      context: ./frontend-web
+      args:
+        VITE_API_BASE_URL: http://35.175.245.212:8080
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-gateway
+      - frontend
