@@ -80,6 +80,13 @@ export function CustomerNavbar() {
                   <p className="font-medium text-gray-700 truncate">{customer.email}</p>
                 </div>
                 <div className="py-1">
+                  <Link
+                    to="/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    👤 My Profile
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
@@ -121,6 +128,7 @@ export function CustomerNavbar() {
               <NavLink to="/orders" className="text-sm text-gray-700 py-2 px-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileOpen(false)}>📦 Orders</NavLink>
               <NavLink to="/recommendations" className="text-sm text-gray-700 py-2 px-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileOpen(false)}>✨ For You</NavLink>
               <NavLink to="/reviews" className="text-sm text-gray-700 py-2 px-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileOpen(false)}>⭐ My Reviews</NavLink>
+              <NavLink to="/profile" className="text-sm text-gray-700 py-2 px-2 rounded-lg hover:bg-gray-50" onClick={() => setMobileOpen(false)}>👤 My Profile</NavLink>
               <button onClick={() => { handleLogout(); setMobileOpen(false) }} className="text-sm text-red-600 text-left py-2 px-2 rounded-lg hover:bg-red-50">🚪 Logout</button>
             </>
           ) : (

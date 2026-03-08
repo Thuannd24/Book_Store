@@ -4,6 +4,7 @@ import { AdminLayout } from './AdminLayout'
 
 const links = [
   { to: '/manager/dashboard', label: '📊 Dashboard', end: false },
+  { to: '/manager/customers', label: '👥 Customers', end: false },
 ]
 
 export function ManagerLayout() {
