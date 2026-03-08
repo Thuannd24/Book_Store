@@ -5,6 +5,7 @@ import { AdminLayout } from './AdminLayout'
 const links = [
   { to: '/staff/books', label: '📚 Books', end: false },
   { to: '/staff/categories', label: '🏷️ Categories', end: false },
+  { to: '/staff/orders', label: '📦 Orders', end: false },
 ]
 
 export function StaffLayout() {
