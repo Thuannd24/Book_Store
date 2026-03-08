@@ -9,7 +9,7 @@ class ProxyTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    @patch('gateway.views.requests.request')
+    @patch('gateway.interfaces.views.requests.request')
     def test_proxy_forwards_and_returns_json(self, mock_request):
         mock_resp = type('obj', (), {})()
         mock_resp.status_code = 201
@@ -23,7 +23,7 @@ class ProxyTests(TestCase):
         self.assertTrue(res.data['ok'])
         mock_request.assert_called_once()
 
-    @patch('gateway.views.requests.request')
+    @patch('gateway.interfaces.views.requests.request')
     def test_proxy_handles_upstream_error(self, mock_request):
         mock_request.side_effect = Exception("boom")
 

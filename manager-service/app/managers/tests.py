@@ -57,10 +57,10 @@ class DashboardSummaryTests(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-    @patch('managers.services.get_reviews_count', return_value=(7, None))
-    @patch('managers.services.get_orders_count', return_value=(12, None))
-    @patch('managers.services.get_books_count', return_value=(3, None))
-    @patch('managers.services.get_customers_count', return_value=(5, None))
+    @patch('managers.application.services.get_reviews_count', return_value=(7, None))
+    @patch('managers.application.services.get_orders_count', return_value=(12, None))
+    @patch('managers.application.services.get_books_count', return_value=(3, None))
+    @patch('managers.application.services.get_customers_count', return_value=(5, None))
     def test_dashboard_summary(self, mock_reviews, mock_orders, mock_books, mock_customers):
         res = self.client.get('/api/manager/dashboard/summary/')
         self.assertEqual(res.status_code, status.HTTP_200_OK)

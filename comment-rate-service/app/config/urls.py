@@ -1,5 +1,5 @@
 from django.urls import include, path
 
 urlpatterns = [
-    path('api/', include('comment_rate.urls')),
+    path('api/', include('comment_rate.interfaces.urls')),
 ]
