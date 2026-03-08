@@ -1,54 +1,71 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { saveTokens, clearTokens, getSavedUser, getRefreshToken } from '../utils/token'
+import { authLogout } from '../api/auth'
 
 const AuthContext = createContext(null)
 
-const loadUser = (key) => {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
+/**
+ * Determine current role from stored user.
+ * Returns: 'CUSTOMER' | 'STAFF' | 'MANAGER' | null
+ */
+function getRoleFromUser(user) {
+  if (!user) return null
+  return user.role || null
 }
 
 export function AuthProvider({ children }) {
-  const [customer, setCustomer] = useState(() => loadUser('customer'))
-  const [staff, setStaff] = useState(() => loadUser('staff'))
-  const [manager, setManager] = useState(() => loadUser('manager'))
+  const [authUser, setAuthUser] = useState(() => getSavedUser())
 
-  const loginAsCustomer = useCallback((user) => {
-    localStorage.setItem('customer', JSON.stringify(user))
-    setCustomer(user)
+  // Derived role shortcuts (kept for backward compatibility with existing components)
+  const role = getRoleFromUser(authUser)
+  const customer = role === 'CUSTOMER' ? authUser : null
+  const staff = role === 'STAFF' ? authUser : null
+  const manager = role === 'MANAGER' ? authUser : null
+
+  // Listen for forced logout event (triggered by api/client.js on token refresh failure)
+  useEffect(() => {
+    const handleForcedLogout = () => {
+      setAuthUser(null)
+    }
+    window.addEventListener('auth:logout', handleForcedLogout)
+    return () => window.removeEventListener('auth:logout', handleForcedLogout)
   }, [])
 
-  const logoutCustomer = useCallback(() => {
-    localStorage.removeItem('customer')
-    setCustomer(null)
+  /**
+   * Called after successful auth-service login.
+   * data: { access, refresh, user: { id, email, role, full_name } }
+   */
+  const loginWithTokens = useCallback((data) => {
+    saveTokens({ access: data.access, refresh: data.refresh, user: data.user })
+    setAuthUser(data.user)
   }, [])
 
-  const loginAsStaff = useCallback((user) => {
-    localStorage.setItem('staff', JSON.stringify(user))
-    setStaff(user)
+  const logout = useCallback(async () => {
+    const refresh = getRefreshToken()
+    if (refresh) {
+      await authLogout(refresh) // fire-and-forget blacklist on server
+    }
+    clearTokens()
+    setAuthUser(null)
   }, [])
 
-  const logoutStaff = useCallback(() => {
-    localStorage.removeItem('staff')
-    setStaff(null)
-  }, [])
-
-  const loginAsManager = useCallback((user) => {
-    localStorage.setItem('manager', JSON.stringify(user))
-    setManager(user)
-  }, [])
-
-  const logoutManager = useCallback(() => {
-    localStorage.removeItem('manager')
-    setManager(null)
-  }, [])
+  // Backward-compatible aliases used by existing login pages
+  const loginAsCustomer = useCallback((data) => loginWithTokens(data), [loginWithTokens])
+  const loginAsStaff = useCallback((data) => loginWithTokens(data), [loginWithTokens])
+  const loginAsManager = useCallback((data) => loginWithTokens(data), [loginWithTokens])
+  const logoutCustomer = logout
+  const logoutStaff = logout
+  const logoutManager = logout
 
   return (
     <AuthContext.Provider
       value={{
+        // New unified API
+        authUser,
+        role,
+        loginWithTokens,
+        logout,
+        // Backward-compatible aliases
         customer,
         staff,
         manager,

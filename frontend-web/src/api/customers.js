@@ -1,12 +1,8 @@
 import api from './client'
 
-// Register a new customer
+// Register a new customer (no JWT needed)
 export const registerCustomer = (data) =>
   api.post('/gateway/customers/api/customers/register/', data).then((r) => r.data)
-
-// Login customer → returns profile object (no JWT; store id in localStorage)
-export const loginCustomer = (data) =>
-  api.post('/gateway/customers/api/customers/login/', data).then((r) => r.data)
 
 // Get customer profile
 export const getCustomer = (customerId) =>

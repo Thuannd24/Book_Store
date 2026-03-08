@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { loginCustomer } from '../../api/customers'
+import { authLogin } from '../../api/auth'
 import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/common/Input'
 import { BaseLoginForm } from '../../components/common/BaseLoginForm'
 
 export default function LoginPage() {
-  const { loginAsCustomer } = useAuth()
+  const { loginWithTokens } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from || '/'
@@ -24,8 +24,8 @@ export default function LoginPage() {
     setLoading(true)
     setApiError('')
     try {
-      const user = await loginCustomer(form)
-      loginAsCustomer(user)
+      const data = await authLogin(form.email, form.password, 'CUSTOMER')
+      loginWithTokens(data)
       navigate(from, { replace: true })
     } catch (err) {
       setApiError(err.message)

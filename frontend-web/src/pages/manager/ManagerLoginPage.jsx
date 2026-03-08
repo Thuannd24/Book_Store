@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginManager } from '../../api/managers'
+import { authLogin } from '../../api/auth'
 import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/common/Input'
 import { BaseLoginForm } from '../../components/common/BaseLoginForm'
 
 export default function ManagerLoginPage() {
-  const { loginAsManager } = useAuth()
+  const { loginWithTokens } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
@@ -22,8 +22,8 @@ export default function ManagerLoginPage() {
     setLoading(true)
     setApiError('')
     try {
-      const user = await loginManager(form)
-      loginAsManager(user)
+      const data = await authLogin(form.email, form.password, 'MANAGER')
+      loginWithTokens(data)
       navigate('/manager/dashboard')
     } catch (err) {
       setApiError(err.message)
