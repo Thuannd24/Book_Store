@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import requests
 from django.conf import settings
@@ -8,12 +8,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 5
 
-
 def _fetch_json(url: str) -> Any:
     response = requests.get(url, timeout=DEFAULT_TIMEOUT)
     response.raise_for_status()
     return response.json()
-
 
 def _safe_count(fetcher: Callable[[], Any], unavailable_message: str) -> Tuple[Optional[int], Optional[str]]:
     try:
@@ -34,21 +32,17 @@ def _safe_count(fetcher: Callable[[], Any], unavailable_message: str) -> Tuple[O
             return len(data['results']), None
     return None, unavailable_message
 
-
 def get_customers_count() -> Tuple[Optional[int], Optional[str]]:
     url = f"{settings.CUSTOMER_SERVICE_URL.rstrip('/')}/api/customers/"
     return _safe_count(lambda: _fetch_json(url), "customers count endpoint not available")
-
 
 def get_books_count() -> Tuple[Optional[int], Optional[str]]:
     url = f"{settings.BOOK_SERVICE_URL.rstrip('/')}/api/books/"
     return _safe_count(lambda: _fetch_json(url), "books list endpoint returned unexpected format")
 
-
 def get_orders_count() -> Tuple[Optional[int], Optional[str]]:
     url = f"{settings.ORDER_SERVICE_URL.rstrip('/')}/api/orders/"
     return _safe_count(lambda: _fetch_json(url), "orders list/count endpoint not available")
-
 
 def get_reviews_count() -> Tuple[Optional[int], Optional[str]]:
     url = f"{settings.REVIEW_SERVICE_URL.rstrip('/')}/api/reviews/books/summary/averages/"
@@ -68,6 +62,17 @@ def get_reviews_count() -> Tuple[Optional[int], Optional[str]]:
         return int(data.get('review_count') or 0), None
     return None, "reviews summary endpoint returned unexpected format"
 
+def get_recent_orders(limit: int = 10) -> List[Dict]:
+    url = f"{settings.ORDER_SERVICE_URL.rstrip('/')}/api/orders/"
+    try:
+        data = _fetch_json(url)
+        if isinstance(data, list):
+            # Sort by created_at descending and return latest N
+            sorted_orders = sorted(data, key=lambda o: o.get('created_at', ''), reverse=True)
+            return sorted_orders[:limit]
+    except Exception as exc:
+        logger.warning("Failed to fetch recent orders: %s", exc)
+    return []
 
 def build_dashboard_summary() -> Dict[str, Any]:
     summary = {}
@@ -83,6 +88,8 @@ def build_dashboard_summary() -> Dict[str, Any]:
         summary[key] = count
         if note:
             notes[key] = note
+
+    summary['recent_orders'] = get_recent_orders(limit=10)
 
     if notes:
         summary['notes'] = notes
