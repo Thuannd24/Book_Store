@@ -8,14 +8,9 @@ const api = axios.create({
   timeout: 10000,
 })
 
-// Attach stored token/customer id to requests if needed
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token')
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
-  }
-  return config
-})
+// NOTE: This app uses session-based auth stored in localStorage (no JWT).
+// User objects are stored under keys: 'customer', 'staff', 'manager'.
+// If JWT is added in the future, attach it here via a request interceptor.
 
 api.interceptors.response.use(
   (res) => res,

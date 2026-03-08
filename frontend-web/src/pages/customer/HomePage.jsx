@@ -15,9 +15,9 @@ export default function HomePage() {
   const { customer } = useAuth()
 
   useEffect(() => {
-    Promise.all([getBooks(), getCategories()])
+    Promise.all([getBooks({ limit: 8 }), getCategories()])
       .then(([books, cats]) => {
-        setFeatured(books.slice(0, 8))
+        setFeatured(books)
         setCategories(cats.slice(0, 6))
       })
       .catch((e) => setError(e.message))
