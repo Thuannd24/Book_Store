@@ -10,6 +10,7 @@ import { Badge } from '../../components/common/Badge'
 import { Spinner, LoadingPage } from '../../components/common/Spinner'
 import { ErrorPage } from '../../components/common/ErrorBanner'
 import { EmptyState } from '../../components/common/EmptyState'
+import { ToastContainer, useToast } from '../../components/common/Toast'
 import { formatCurrency, formatDate } from '../../utils/format'
 
 export default function BookDetailPage() {
@@ -23,8 +24,8 @@ export default function BookDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [cartLoading, setCartLoading] = useState(false)
-  const [cartMsg, setCartMsg] = useState('')
   const [qty, setQty] = useState(1)
+  const { toasts, dismiss, toast } = useToast()
 
   useEffect(() => {
     setLoading(true)
@@ -45,12 +46,11 @@ export default function BookDetailPage() {
   const handleAddToCart = async () => {
     if (!customer) { navigate('/login', { state: { from: `/books/${id}` } }); return }
     setCartLoading(true)
-    setCartMsg('')
     try {
       await addToCart(customer.id, { book_id: Number(id), quantity: qty })
-      setCartMsg('✅ Added to cart!')
+      toast.success('Added to cart! 🛒')
     } catch (e) {
-      setCartMsg(`❌ ${e.message}`)
+      toast.error(e.message)
     } finally {
       setCartLoading(false)
     }
@@ -121,7 +121,6 @@ export default function BookDetailPage() {
               🛒 Add to Cart
             </Button>
           </div>
-          {cartMsg && <p className="text-sm">{cartMsg}</p>}
 
           <div className="text-xs text-gray-400 pt-2 border-t">
             ISBN: {book.isbn || '—'} · Added: {formatDate(book.created_at)}
@@ -157,6 +156,8 @@ export default function BookDetailPage() {
           </div>
         )}
       </div>
+
+      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

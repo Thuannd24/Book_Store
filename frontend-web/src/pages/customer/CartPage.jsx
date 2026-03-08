@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCart, updateCartItem, removeCartItem } from '../../api/cart'
 import { useAuth } from '../../contexts/AuthContext'
@@ -6,6 +6,8 @@ import { Button } from '../../components/common/Button'
 import { Spinner } from '../../components/common/Spinner'
 import { EmptyState } from '../../components/common/EmptyState'
 import { ErrorBanner } from '../../components/common/ErrorBanner'
+import { ConfirmDialog } from '../../components/common/ConfirmDialog'
+import { ToastContainer, useToast } from '../../components/common/Toast'
 import { formatCurrency } from '../../utils/format'
 
 export default function CartPage() {
@@ -15,16 +17,18 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [updating, setUpdating] = useState(null)
+  const [confirmRemove, setConfirmRemove] = useState(null)
+  const { toasts, dismiss, toast } = useToast()
 
-  const fetchCart = () => {
+  const fetchCart = useCallback(() => {
     setLoading(true)
     getCart(customer.id)
       .then(setCart)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
-  }
+  }, [customer.id])
 
-  useEffect(() => { fetchCart() }, [customer.id])
+  useEffect(() => { fetchCart() }, [fetchCart])
 
   const handleQtyChange = async (itemId, qty) => {
     if (qty < 1) return
@@ -33,21 +37,25 @@ export default function CartPage() {
       const updated = await updateCartItem(itemId, { quantity: qty })
       setCart(updated)
     } catch (e) {
-      setError(e.message)
+      toast.error(e.message)
     } finally {
       setUpdating(null)
     }
   }
 
-  const handleRemove = async (itemId) => {
+  const handleRemoveConfirmed = async () => {
+    if (!confirmRemove) return
+    const itemId = confirmRemove.id
     setUpdating(itemId)
     try {
       const updated = await removeCartItem(itemId)
       setCart(updated)
+      toast.success(`"${confirmRemove.book_title_snapshot}" removed from cart.`)
     } catch (e) {
-      setError(e.message)
+      toast.error(e.message)
     } finally {
       setUpdating(null)
+      setConfirmRemove(null)
     }
   }
 
@@ -72,7 +80,8 @@ export default function CartPage() {
         <>
           <div className="bg-white rounded-2xl border divide-y">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 px-6 py-4">
+              <div key={item.id} className="flex items-center gap-4 px-6 py-4 transition-opacity duration-150"
+                style={{ opacity: updating === item.id ? 0.5 : 1 }}>
                 <div className="w-12 h-16 bg-indigo-50 rounded-lg flex items-center justify-center shrink-0">
                   <span className="text-2xl">📖</span>
                 </div>
@@ -82,18 +91,18 @@ export default function CartPage() {
                   <p className="text-xs text-gray-400">{formatCurrency(item.price_snapshot)} each</p>
                 </div>
 
-                {/* Quantity */}
-                <div className="flex items-center gap-2 border rounded-lg px-2 py-1">
+                {/* Quantity stepper */}
+                <div className="flex items-center gap-1 border rounded-lg">
                   <button
-                    disabled={updating === item.id}
+                    disabled={updating === item.id || item.quantity <= 1}
                     onClick={() => handleQtyChange(item.id, item.quantity - 1)}
-                    className="text-gray-500 hover:text-gray-800 disabled:opacity-40 font-bold"
+                    className="px-3 py-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-50 disabled:opacity-40 rounded-l-lg transition-colors font-bold"
                   >−</button>
-                  <span className="w-5 text-center text-sm">{item.quantity}</span>
+                  <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                   <button
                     disabled={updating === item.id}
                     onClick={() => handleQtyChange(item.id, item.quantity + 1)}
-                    className="text-gray-500 hover:text-gray-800 disabled:opacity-40 font-bold"
+                    className="px-3 py-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-50 disabled:opacity-40 rounded-r-lg transition-colors font-bold"
                   >+</button>
                 </div>
 
@@ -102,10 +111,11 @@ export default function CartPage() {
                 </p>
 
                 <button
-                  onClick={() => handleRemove(item.id)}
+                  onClick={() => setConfirmRemove(item)}
                   disabled={updating === item.id}
-                  className="text-red-400 hover:text-red-600 disabled:opacity-40 ml-2"
-                >✕</button>
+                  title="Remove item"
+                  className="text-red-300 hover:text-red-500 hover:bg-red-50 disabled:opacity-40 ml-2 p-1.5 rounded-lg transition-colors"
+                >🗑️</button>
               </div>
             ))}
           </div>
@@ -126,6 +136,20 @@ export default function CartPage() {
           </div>
         </>
       )}
+
+      {/* Confirm remove dialog */}
+      <ConfirmDialog
+        isOpen={!!confirmRemove}
+        onClose={() => setConfirmRemove(null)}
+        onConfirm={handleRemoveConfirmed}
+        title="Remove item?"
+        message={`Remove "${confirmRemove?.book_title_snapshot}" from your cart?`}
+        confirmLabel="Remove"
+        danger
+      />
+
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
