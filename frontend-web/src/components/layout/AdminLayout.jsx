@@ -11,7 +11,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 export function AdminLayout({ panelLabel, links, user, onLogout }) {
   return (
     <div className="min-h-screen flex bg-gray-100">
-      <aside className="w-60 bg-white border-r shadow-sm flex flex-col">
+      <aside className="w-60 bg-white border-r shadow-sm flex flex-col sticky top-0 h-screen overflow-y-auto shrink-0">
         <div className="px-6 py-5 border-b">
           <div className="font-bold text-indigo-700 text-lg">📚 BookStore</div>
           <div className="text-xs text-gray-500 mt-1">{panelLabel}</div>

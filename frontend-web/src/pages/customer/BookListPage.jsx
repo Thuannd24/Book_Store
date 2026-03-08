@@ -80,7 +80,7 @@ export default function BookListPage() {
 
       <div className="flex gap-6">
         {/* Sidebar categories — desktop */}
-        <aside className="hidden md:flex flex-col gap-1 w-44 shrink-0">
+        <aside className="hidden md:flex flex-col gap-1 w-44 shrink-0 sticky top-24 self-start">
           <button
             onClick={() => { const p = new URLSearchParams(searchParams); p.delete('category_id'); setSearchParams(p) }}
             className={`text-left text-sm px-3 py-2 rounded-lg ${!categoryId ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
