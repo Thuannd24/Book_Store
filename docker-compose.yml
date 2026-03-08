@@ -101,6 +101,10 @@ services:
       CATALOG_SERVICE_URL: http://catalog-service:8000
       STAFF_SERVICE_URL: http://staff-service:8000
       MANAGER_SERVICE_URL: http://manager-service:8000
+      AUTH_SERVICE_URL: http://auth-service:8000
+      REDIS_URL: redis://redis:6379/0
+      JWT_AUTH_ENABLED: "false"
+      RATE_LIMIT_ENABLED: "true"
       CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000,http://35.175.245.212,http://35.175.245.212:3000,http://35.175.245.212:8080  
     depends_on:
       - staff-service
@@ -115,6 +119,8 @@ services:
       - comment-rate-service
       - recommender-ai-service
       - api-gateway-db
+      - redis
+      - auth-service
 
   staff-service:
     build: ./staff-service
@@ -188,11 +194,13 @@ services:
       CART_SERVICE_URL: http://cart-service:8000
       PAY_SERVICE_URL: http://pay-service:8000
       SHIP_SERVICE_URL: http://ship-service:8000
+      RABBITMQ_URL: amqp://bookstore:bookstore123@rabbitmq:5672/
     depends_on:
       - order-db
       - cart-service
       - pay-service
       - ship-service
+      - rabbitmq
 
   ship-service:
     build: ./ship-service
@@ -236,6 +244,54 @@ services:
       - order-service
       - book-service
       - comment-rate-service
+
+  # ── Message Broker ───────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: bookstore
+      RABBITMQ_DEFAULT_PASS: bookstore123
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Cache / Rate Limiting ─────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Auth Service ──────────────────────────────────────────────
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "2604"
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8092:8000"
+    environment:
+      DATABASE_URL: postgres://postgres:2604@auth-db:5432/auth_db
+      JWT_SECRET_KEY: super-secret-jwt-key-change-in-production
+      CUSTOMER_SERVICE_URL: http://customer-service:8000
+      STAFF_SERVICE_URL: http://staff-service:8000
+      MANAGER_SERVICE_URL: http://manager-service:8000
+    depends_on:
+      - auth-db
+      - customer-service
   frontend:
     build:
       context: ./frontend-web

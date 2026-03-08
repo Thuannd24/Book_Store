@@ -11,7 +11,18 @@ from .serializers import ShipmentSerializer, InternalShipmentSerializer
 
 @api_view(['GET'])
 def health(request):
-    return Response({'status': 'ok', 'service': 'ship-service'})
+    db_ok = True
+    try:
+        from django.db import connection
+        connection.ensure_connection()
+    except Exception:
+        db_ok = False
+    return Response({
+        'status': 'ok' if db_ok else 'degraded',
+        'service': 'ship-service',
+        'db': 'ok' if db_ok else 'error',
+        'version': '2.0.0',
+    }, status=200 if db_ok else 503)
 
 
 def _generate_tracking(order_id: int, seq: int) -> str:
@@ -58,6 +69,23 @@ class InternalShipmentCreateView(APIView):
 
         payload = InternalShipmentSerializer(shipment).data
         return Response({'success': True, 'shipment': payload}, status=status.HTTP_201_CREATED)
+
+
+class InternalShipmentCancelView(APIView):
+    """
+    DELETE /internal/shipments/{shipment_id}/
+    Cancels a shipment (saga compensation).
+    """
+
+    def delete(self, request, shipment_id):
+        try:
+            shipment = Shipment.objects.get(pk=shipment_id)
+        except Shipment.DoesNotExist:
+            return Response({'success': False, 'error': 'Shipment not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        shipment.status = Shipment.Status.FAILED
+        shipment.save(update_fields=['status'])
+        return Response({'success': True, 'shipment_id': shipment_id}, status=status.HTTP_200_OK)
 
 
 class ShipmentDetailView(APIView):

@@ -1,0 +1,11 @@
+from rest_framework import serializers
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+    role = serializers.ChoiceField(choices=['CUSTOMER', 'STAFF', 'MANAGER'])
+
+
+class TokenVerifySerializer(serializers.Serializer):
+    token = serializers.CharField()

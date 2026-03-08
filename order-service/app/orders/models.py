@@ -5,11 +5,16 @@ from django.db import models
 
 class Order(models.Model):
     class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
         CREATED = 'CREATED', 'Created'
         PAYMENT_CREATED = 'PAYMENT_CREATED', 'Payment Created'
+        PAYMENT_RESERVED = 'PAYMENT_RESERVED', 'Payment Reserved'
         SHIPMENT_CREATED = 'SHIPMENT_CREATED', 'Shipment Created'
+        SHIPMENT_RESERVED = 'SHIPMENT_RESERVED', 'Shipment Reserved'
         CONFIRMED = 'CONFIRMED', 'Confirmed'
         FAILED = 'FAILED', 'Failed'
+        COMPENSATING = 'COMPENSATING', 'Compensating'
+        COMPENSATED = 'COMPENSATED', 'Compensated'
 
     customer_id = models.IntegerField(db_index=True)
     cart_id = models.IntegerField()
@@ -43,3 +48,18 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'OrderItem(order_id={self.order_id}, book_id={self.book_id}, qty={self.quantity})'
+
+
+class SagaLog(models.Model):
+    order_id = models.IntegerField(db_index=True)
+    step = models.CharField(max_length=64)
+    status = models.CharField(max_length=32)  # STARTED, COMPLETED, FAILED, COMPENSATED
+    payload = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'saga_logs'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'SagaLog(order_id={self.order_id}, step={self.step}, status={self.status})'
