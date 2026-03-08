@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getRecommendations } from '../../api/recommendations'
-import { getBookById } from '../../api/books'
+import { getBook } from '../../api/books'
 import { useAuth } from '../../contexts/AuthContext'
 import { BookCard } from '../../components/book/BookCard'
 import { Spinner } from '../../components/common/Spinner'
@@ -21,7 +21,7 @@ export default function RecommendationPage() {
         const items = result?.recommendations || []
         const enriched = await Promise.all(
           items.map((item) =>
-            getBookById(item.book_id)
+            getBook(item.book_id)
               .then((fullBook) => ({
                 ...fullBook,
                 average_rating: item.average_rating,
