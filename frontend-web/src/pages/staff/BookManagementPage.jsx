@@ -4,6 +4,7 @@ import { getCategories } from '../../api/catalog'
 import { Button } from '../../components/common/Button'
 import { Input, Select, Textarea } from '../../components/common/Input'
 import { Modal } from '../../components/common/Modal'
+import { ConfirmDialog } from '../../components/common/ConfirmDialog'
 import { Spinner } from '../../components/common/Spinner'
 import { EmptyState } from '../../components/common/EmptyState'
 import { ErrorBanner } from '../../components/common/ErrorBanner'
@@ -27,6 +28,7 @@ export default function BookManagementPage() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [search, setSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const fetchData = () => {
     setLoading(true)
@@ -103,13 +105,19 @@ export default function BookManagementPage() {
     }
   }
 
-  const handleDelete = async (book) => {
-    if (!window.confirm(`Delete "${book.title}"? This cannot be undone.`)) return
+  const handleDelete = (book) => {
+    setDeleteTarget(book)
+  }
+
+  const handleDeleteConfirmed = async () => {
+    if (!deleteTarget) return
     try {
-      await deleteBook(book.id)
-      setBooks((bs) => bs.filter((b) => b.id !== book.id))
+      await deleteBook(deleteTarget.id)
+      setBooks((bs) => bs.filter((b) => b.id !== deleteTarget.id))
     } catch (err) {
       setError(err.message)
+    } finally {
+      setDeleteTarget(null)
     }
   }
 
@@ -234,6 +242,16 @@ export default function BookManagementPage() {
           <Textarea label="Description" placeholder="Book description..." {...f('description')} />
         </div>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteConfirmed}
+        title="Delete Book?"
+        message={`Are you sure you want to delete "${deleteTarget?.title}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        danger
+      />
     </div>
   )
 }
