@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginStaff } from '../../api/staff'
+import { authLogin } from '../../api/auth'
 import { useAuth } from '../../contexts/AuthContext'
 import { Input } from '../../components/common/Input'
 import { BaseLoginForm } from '../../components/common/BaseLoginForm'
 
 export default function StaffLoginPage() {
-  const { loginAsStaff } = useAuth()
+  const { loginWithTokens } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({})
@@ -22,8 +22,8 @@ export default function StaffLoginPage() {
     setLoading(true)
     setApiError('')
     try {
-      const user = await loginStaff(form)
-      loginAsStaff(user)
+      const data = await authLogin(form.email, form.password, 'STAFF')
+      loginWithTokens(data)
       navigate('/staff/books')
     } catch (err) {
       setApiError(err.message)

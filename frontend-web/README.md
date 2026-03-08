@@ -113,27 +113,46 @@ All calls go through the API gateway at port 8080 via the pattern:
 
 | Service Key | Endpoints Used |
 |---|---|
-| `customers` | `POST /api/customers/register/`, `POST /api/customers/login/`, `GET /api/customers/{id}/` |
+| `auth` | `POST /api/auth/login/`, `POST /api/auth/token/refresh/`, `POST /api/auth/logout/` |
+| `customers` | `POST /api/customers/register/`, `GET /api/customers/{id}/`, `PUT /api/customers/{id}/` |
 | `books` | `GET/POST /api/books/`, `GET/PUT/DELETE /api/books/{id}/` |
 | `catalog` | `GET/POST /api/catalog/categories/`, `GET/PUT/DELETE /api/catalog/categories/{id}/` |
 | `carts` | `GET /api/carts/customer/{id}/`, `POST /api/carts/customer/{id}/items/`, `PUT/DELETE /api/carts/items/{id}/`, `DELETE /api/carts/customer/{id}/clear/` |
 | `orders` | `POST /api/orders/`, `GET /api/orders/{id}/`, `GET /api/orders/customer/{id}/` |
 | `reviews` | `POST /api/reviews/`, `GET /api/reviews/book/{id}/`, `GET /api/reviews/book/{id}/average/`, `GET /api/reviews/customer/{id}/` |
 | `recommendations` | `GET /api/recommendations/customer/{id}/` |
-| `staff` | `POST /api/staff/login/` |
-| `managers` | `POST /api/managers/login/`, `GET /api/manager/dashboard/summary/` |
+| `staff` | `GET /api/staff/{id}/` |
+| `managers` | `GET /api/manager/dashboard/summary/` |
 
 ## Authentication
 
-The backend returns a user object on login — there is no JWT. The frontend stores the object in `localStorage` under the key `customer`, `staff`, or `manager`. Protected routes redirect to the appropriate login page if the key is absent.
+Authentication is handled via a dedicated **auth-service** using JWT (JSON Web Tokens).
 
-**No session expiry is implemented.** Clear localStorage to force logout.
+### Flow
+
+1. User submits email + password + role on the login page
+2. The frontend calls `POST /api/gateway/auth/login/` with `{ email, password, role }`
+3. The auth-service returns `{ access, refresh, user: { id, email, role, full_name } }`
+4. Tokens and user info are stored in `localStorage` under keys `access_token`, `refresh_token`, and `auth_user`
+5. Every subsequent API request automatically includes `Authorization: Bearer <access_token>` via an Axios request interceptor
+6. When the API returns a `401`, the client automatically calls `POST /api/gateway/auth/token/refresh/` to get a new access token and retries the original request
+7. If the refresh also fails, all tokens are cleared and the user is redirected to the appropriate login page
+
+### Token Lifetimes
+
+| Token | Lifetime |
+|---|---|
+| Access token | 60 minutes |
+| Refresh token | 7 days |
+
+### Logout
+
+Logout blacklists the refresh token on the server (`POST /api/gateway/auth/logout/`) and clears all tokens from `localStorage`.
 
 ## Known API Mismatches / Notes
 
 | Issue | Detail |
 |---|---|
-| No JWT | Session is plain localStorage object; no token refresh or expiry |
 | Dashboard `recent_orders` | The summary endpoint does not return recent orders; the table section shows a placeholder message |
 | Recommendations cold start | New users with no purchase history receive empty recommendations — handled with an EmptyState |
 | Duplicate reviews | The backend does not prevent a customer reviewing the same book twice |
