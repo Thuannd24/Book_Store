@@ -14,20 +14,37 @@ export default function BookListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const keyword = searchParams.get('keyword') || ''
   const categoryId = searchParams.get('category_id') || ''
+  const [inputValue, setInputValue] = useState(searchParams.get('keyword') || '')
+  const [debouncedKeyword, setDebouncedKeyword] = useState(searchParams.get('keyword') || '')
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(inputValue)
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [inputValue])
+
+  useEffect(() => {
+    setSearchParams((p) => {
+      const newP = new URLSearchParams(p)
+      if (debouncedKeyword) newP.set('keyword', debouncedKeyword)
+      else newP.delete('keyword')
+      return newP
+    })
+  }, [debouncedKeyword, setSearchParams])
 
   const fetchBooks = useCallback(() => {
     setLoading(true)
     setError('')
     const params = {}
-    if (keyword) params.keyword = keyword
+    if (debouncedKeyword) params.keyword = debouncedKeyword
     if (categoryId) params.category_id = categoryId
     getBooks(params)
       .then(setBooks)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
-  }, [keyword, categoryId])
+  }, [debouncedKeyword, categoryId])
 
   useEffect(() => {
     getCategories().then(setCategories).catch(() => {})
@@ -54,13 +71,8 @@ export default function BookListPage() {
           <input
             type="search"
             placeholder="Search books or authors..."
-            value={keyword}
-            onChange={(e) => {
-              const p = new URLSearchParams(searchParams)
-              if (e.target.value) p.set('keyword', e.target.value)
-              else p.delete('keyword')
-              setSearchParams(p)
-            }}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
           />
         </div>

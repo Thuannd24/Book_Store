@@ -24,6 +24,7 @@ export default function CategoryManagementPage() {
   const [formErrors, setFormErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const fetchCategories = () => {
     setLoading(true)
@@ -80,13 +81,18 @@ export default function CategoryManagementPage() {
     }
   }
 
-  const handleDelete = async (cat) => {
-    if (!window.confirm(`Delete category "${cat.name}"?`)) return
+  const handleDelete = (cat) => {
+    setDeleteTarget(cat)
+  }
+
+  const handleDeleteConfirm = async () => {
     try {
-      await deleteCategory(cat.id)
-      setCategories((cs) => cs.filter((c) => c.id !== cat.id))
+      await deleteCategory(deleteTarget.id)
+      setCategories((cs) => cs.filter((c) => c.id !== deleteTarget.id))
+      setDeleteTarget(null)
     } catch (err) {
       setError(err.message)
+      setDeleteTarget(null)
     }
   }
 
@@ -149,6 +155,22 @@ export default function CategoryManagementPage() {
           </table>
         </div>
       )}
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Delete Category"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDeleteConfirm}>Delete</Button>
+          </>
+        }
+      >
+        <p className="text-sm text-gray-700">
+          Are you sure you want to delete category &quot;{deleteTarget?.name}&quot;? This action cannot be undone.
+        </p>
+      </Modal>
 
       <Modal
         isOpen={modalOpen}
