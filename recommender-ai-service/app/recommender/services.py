@@ -125,11 +125,10 @@ def _recommend_with_gemini(
     rating_map: Dict[int, float],
     top_n: int,
 ) -> List[Dict[str, Any]]:
-    """Call Google Gemini gemini-1.5-flash to select and explain recommendations."""
-    import google.generativeai as genai
+    """Call Google Gemini gemini-2.0-flash to select and explain recommendations."""
+    from google import genai
 
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     # Build purchase history summary
     if purchased_books_info:
@@ -173,7 +172,7 @@ Respond ONLY with a valid JSON array (no markdown, no explanation outside JSON) 
 ]
 """
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
     raw = response.text.strip()
 
     # Strip markdown code fences if present
