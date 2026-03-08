@@ -4,3 +4,4 @@ django-environ>=0.11
 psycopg2-binary>=2.9
 gunicorn>=21.2
 requests>=2.31
+openai>=1.0.0

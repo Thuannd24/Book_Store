@@ -43,6 +43,7 @@ REST_FRAMEWORK = {
 ORDER_SERVICE_URL = env('ORDER_SERVICE_URL', default='http://order-service:8000')
 BOOK_SERVICE_URL = env('BOOK_SERVICE_URL', default='http://book-service:8000')
 REVIEW_SERVICE_URL = env('REVIEW_SERVICE_URL', default='http://comment-rate-service:8000')
+OPENAI_API_KEY = env('OPENAI_API_KEY', default='')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
