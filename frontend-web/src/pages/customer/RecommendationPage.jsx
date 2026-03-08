@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getRecommendations } from '../../api/recommendations'
+import { getBookById } from '../../api/books'
 import { useAuth } from '../../contexts/AuthContext'
 import { BookCard } from '../../components/book/BookCard'
 import { Spinner } from '../../components/common/Spinner'
@@ -14,10 +15,33 @@ export default function RecommendationPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    getRecommendations(customer.id)
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
+    const fetchData = async () => {
+      try {
+        const result = await getRecommendations(customer.id)
+        const items = result?.recommendations || []
+        const enriched = await Promise.all(
+          items.map((item) =>
+            getBookById(item.book_id)
+              .then((fullBook) => ({
+                ...fullBook,
+                average_rating: item.average_rating,
+                reason: item.reason,
+                score: item.score,
+              }))
+              .catch((err) => {
+                console.error('Failed to fetch book', item.book_id, err)
+                return null
+              })
+          )
+        )
+        setData({ ...result, recommendations: enriched.filter(Boolean) })
+      } catch (e) {
+        setError(e.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
   }, [customer.id])
 
   if (loading) return <Spinner />
