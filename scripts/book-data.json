@@ -1,0 +1,2157 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "books",
+    "model": "book"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add book",
+    "content_type": [
+      "books",
+      "book"
+    ],
+    "codename": "add_book"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change book",
+    "content_type": [
+      "books",
+      "book"
+    ],
+    "codename": "change_book"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete book",
+    "content_type": [
+      "books",
+      "book"
+    ],
+    "codename": "delete_book"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view book",
+    "content_type": [
+      "books",
+      "book"
+    ],
+    "codename": "view_book"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 1,
+  "fields": {
+    "title": "Python cho người mới bắt đầu",
+    "isbn": "1001",
+    "author": "Al Sweigart",
+    "publisher": "NXB Trẻ",
+    "price": "120000.00",
+    "stock": 20,
+    "description": "Học Python từ cơ bản đến nâng cao",
+    "image_url": "https://picsum.photos/seed/book1/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.310",
+    "updated_at": "2026-03-08T05:41:18.828"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 2,
+  "fields": {
+    "title": "Clean Code",
+    "isbn": "1002",
+    "author": "Robert C. Martin",
+    "publisher": "NXB KHKT",
+    "price": "180000.00",
+    "stock": 15,
+    "description": "Viết code sạch và dễ bảo trì",
+    "image_url": "https://picsum.photos/seed/book2/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.349",
+    "updated_at": "2026-03-08T05:30:18.349"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 3,
+  "fields": {
+    "title": "JavaScript: The Good Parts",
+    "isbn": "1003",
+    "author": "Douglas Crockford",
+    "publisher": "NXB Lao Động",
+    "price": "150000.00",
+    "stock": 10,
+    "description": "Tinh hoa của JavaScript",
+    "image_url": "https://picsum.photos/seed/book3/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.410",
+    "updated_at": "2026-03-08T05:30:18.410"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 4,
+  "fields": {
+    "title": "The Pragmatic Programmer",
+    "isbn": "1004",
+    "author": "David Thomas",
+    "publisher": "NXB Trẻ",
+    "price": "200000.00",
+    "stock": 12,
+    "description": "Từ newbie đến master",
+    "image_url": "https://picsum.photos/seed/book4/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.468",
+    "updated_at": "2026-03-08T05:30:18.469"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 5,
+  "fields": {
+    "title": "Design Patterns",
+    "isbn": "1005",
+    "author": "Gang of Four",
+    "publisher": "NXB KHKT",
+    "price": "220000.00",
+    "stock": 8,
+    "description": "23 mẫu thiết kế phần mềm",
+    "image_url": "https://picsum.photos/seed/book5/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.502",
+    "updated_at": "2026-03-08T05:30:18.502"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 6,
+  "fields": {
+    "title": "Introduction to Algorithms",
+    "isbn": "1006",
+    "author": "Thomas H. Cormen",
+    "publisher": "NXB ĐHQG",
+    "price": "250000.00",
+    "stock": 6,
+    "description": "Giáo trình thuật toán kinh điển",
+    "image_url": "https://picsum.photos/seed/book6/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.541",
+    "updated_at": "2026-03-08T05:30:18.541"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 7,
+  "fields": {
+    "title": "You Dont Know JS",
+    "isbn": "1007",
+    "author": "Kyle Simpson",
+    "publisher": "NXB Trẻ",
+    "price": "140000.00",
+    "stock": 18,
+    "description": "Hiểu sâu JavaScript",
+    "image_url": "https://picsum.photos/seed/book7/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.577",
+    "updated_at": "2026-03-08T05:30:18.577"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 8,
+  "fields": {
+    "title": "Docker Deep Dive",
+    "isbn": "1008",
+    "author": "Nigel Poulton",
+    "publisher": "NXB KHKT",
+    "price": "130000.00",
+    "stock": 14,
+    "description": "Làm chủ Docker từ A đến Z",
+    "image_url": "https://picsum.photos/seed/book8/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.616",
+    "updated_at": "2026-03-08T05:30:18.616"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 9,
+  "fields": {
+    "title": "Refactoring",
+    "isbn": "1009",
+    "author": "Martin Fowler",
+    "publisher": "NXB Lao Động",
+    "price": "190000.00",
+    "stock": 9,
+    "description": "Cải thiện thiết kế code hiện có",
+    "image_url": "https://picsum.photos/seed/book9/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.653",
+    "updated_at": "2026-03-08T05:30:18.653"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 10,
+  "fields": {
+    "title": "Structure and Interpretation of Computer Programs",
+    "isbn": "1010",
+    "author": "Harold Abelson",
+    "publisher": "NXB ĐHQG",
+    "price": "230000.00",
+    "stock": 5,
+    "description": "Kinh điển về lập trình hàm",
+    "image_url": "https://picsum.photos/seed/book10/300/400",
+    "category_id": 11,
+    "category_name_snapshot": "Lập trình",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:18.691",
+    "updated_at": "2026-03-08T05:30:18.691"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 11,
+  "fields": {
+    "title": "Số Đỏ",
+    "isbn": "2001",
+    "author": "Vũ Trọng Phụng",
+    "publisher": "NXB Văn Học",
+    "price": "85000.00",
+    "stock": 25,
+    "description": "Tiểu thuyết trào phúng kinh điển",
+    "image_url": "https://picsum.photos/seed/book11/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.197",
+    "updated_at": "2026-03-08T05:30:25.197"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 12,
+  "fields": {
+    "title": "Tắt Đèn",
+    "isbn": "2002",
+    "author": "Ngô Tất Tố",
+    "publisher": "NXB Văn Học",
+    "price": "75000.00",
+    "stock": 20,
+    "description": "Số phận người nông dân Việt Nam",
+    "image_url": "https://picsum.photos/seed/book12/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.231",
+    "updated_at": "2026-03-08T05:30:25.231"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 13,
+  "fields": {
+    "title": "Chí Phèo",
+    "isbn": "2003",
+    "author": "Nam Cao",
+    "publisher": "NXB Văn Học",
+    "price": "65000.00",
+    "stock": 30,
+    "description": "Tuyển tập truyện ngắn Nam Cao",
+    "image_url": "https://picsum.photos/seed/book13/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.270",
+    "updated_at": "2026-03-08T05:30:25.270"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 14,
+  "fields": {
+    "title": "Nhà Giả Kim",
+    "isbn": "2004",
+    "author": "Paulo Coelho",
+    "publisher": "NXB Hội Nhà Văn",
+    "price": "95000.00",
+    "stock": 35,
+    "description": "Hành trình tìm kiếm ước mơ",
+    "image_url": "https://picsum.photos/seed/book14/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.310",
+    "updated_at": "2026-03-08T05:30:25.310"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 15,
+  "fields": {
+    "title": "Đắc Nhân Tâm",
+    "isbn": "2005",
+    "author": "Dale Carnegie",
+    "publisher": "NXB Tổng Hợp",
+    "price": "110000.00",
+    "stock": 40,
+    "description": "Nghệ thuật thu phục lòng người",
+    "image_url": "https://picsum.photos/seed/book15/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.346",
+    "updated_at": "2026-03-08T05:30:25.346"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 16,
+  "fields": {
+    "title": "Bố Già",
+    "isbn": "2006",
+    "author": "Mario Puzo",
+    "publisher": "NXB Văn Học",
+    "price": "130000.00",
+    "stock": 15,
+    "description": "Tiểu thuyết mafia kinh điển",
+    "image_url": "https://picsum.photos/seed/book16/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.384",
+    "updated_at": "2026-03-08T05:30:25.384"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 17,
+  "fields": {
+    "title": "Hoàng Tử Bé",
+    "isbn": "2007",
+    "author": "Antoine de Saint-Exupéry",
+    "publisher": "NXB Hội Nhà Văn",
+    "price": "70000.00",
+    "stock": 50,
+    "description": "Câu chuyện cổ tích cho người lớn",
+    "image_url": "https://picsum.photos/seed/book17/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.420",
+    "updated_at": "2026-03-08T05:30:25.420"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 18,
+  "fields": {
+    "title": "1984",
+    "isbn": "2008",
+    "author": "George Orwell",
+    "publisher": "NXB Hội Nhà Văn",
+    "price": "120000.00",
+    "stock": 18,
+    "description": "Xã hội toàn trị trong tương lai",
+    "image_url": "https://picsum.photos/seed/book18/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.455",
+    "updated_at": "2026-03-08T05:30:25.455"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 19,
+  "fields": {
+    "title": "Trăm Năm Cô Đơn",
+    "isbn": "2009",
+    "author": "Gabriel García Márquez",
+    "publisher": "NXB Văn Học",
+    "price": "145000.00",
+    "stock": 12,
+    "description": "Kiệt tác văn học Mỹ Latinh",
+    "image_url": "https://picsum.photos/seed/book19/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.493",
+    "updated_at": "2026-03-08T05:30:25.493"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 20,
+  "fields": {
+    "title": "Chiến Tranh Và Hòa Bình",
+    "isbn": "2010",
+    "author": "Leo Tolstoy",
+    "publisher": "NXB Văn Học",
+    "price": "200000.00",
+    "stock": 8,
+    "description": "Đại tác phẩm văn học Nga",
+    "image_url": "https://picsum.photos/seed/book20/300/400",
+    "category_id": 12,
+    "category_name_snapshot": "Văn học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:25.530",
+    "updated_at": "2026-03-08T05:30:25.530"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 21,
+  "fields": {
+    "title": "Lược Sử Thời Gian",
+    "isbn": "3001",
+    "author": "Stephen Hawking",
+    "publisher": "NXB Trẻ",
+    "price": "130000.00",
+    "stock": 20,
+    "description": "Vũ trụ từ Big Bang đến lỗ đen",
+    "image_url": "https://picsum.photos/seed/book21/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.074",
+    "updated_at": "2026-03-08T05:30:34.074"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 22,
+  "fields": {
+    "title": "Sapiens: Lược Sử Loài Người",
+    "isbn": "3002",
+    "author": "Yuval Noah Harari",
+    "publisher": "NXB Thế Giới",
+    "price": "175000.00",
+    "stock": 25,
+    "description": "Lịch sử tiến hóa của loài người",
+    "image_url": "https://picsum.photos/seed/book22/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.100",
+    "updated_at": "2026-03-08T05:30:34.100"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 23,
+  "fields": {
+    "title": "Vũ Trụ Trong Vỏ Hạt Dẻ",
+    "isbn": "3003",
+    "author": "Stephen Hawking",
+    "publisher": "NXB Trẻ",
+    "price": "140000.00",
+    "stock": 15,
+    "description": "Vật lý học hiện đại dễ hiểu",
+    "image_url": "https://picsum.photos/seed/book23/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.130",
+    "updated_at": "2026-03-08T05:30:34.130"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 24,
+  "fields": {
+    "title": "Thuyết Tương Đối",
+    "isbn": "3004",
+    "author": "Albert Einstein",
+    "publisher": "NXB KHKT",
+    "price": "95000.00",
+    "stock": 10,
+    "description": "Giải thích thuyết tương đối cho đại chúng",
+    "image_url": "https://picsum.photos/seed/book24/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.158",
+    "updated_at": "2026-03-08T05:30:34.158"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 25,
+  "fields": {
+    "title": "Genome",
+    "isbn": "3005",
+    "author": "Matt Ridley",
+    "publisher": "NXB Trẻ",
+    "price": "160000.00",
+    "stock": 12,
+    "description": "23 chương về 23 cặp nhiễm sắc thể",
+    "image_url": "https://picsum.photos/seed/book25/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.185",
+    "updated_at": "2026-03-08T05:30:34.185"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 26,
+  "fields": {
+    "title": "The Gene",
+    "isbn": "3006",
+    "author": "Siddhartha Mukherjee",
+    "publisher": "NXB Thế Giới",
+    "price": "185000.00",
+    "stock": 8,
+    "description": "Lịch sử thân mật về gen di truyền",
+    "image_url": "https://picsum.photos/seed/book26/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.212",
+    "updated_at": "2026-03-08T05:30:34.212"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 27,
+  "fields": {
+    "title": "Oxy Hóa Khử",
+    "isbn": "3007",
+    "author": "Nick Lane",
+    "publisher": "NXB KHKT",
+    "price": "120000.00",
+    "stock": 10,
+    "description": "Oxy và sự tiến hóa của sự sống",
+    "image_url": "https://picsum.photos/seed/book27/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.241",
+    "updated_at": "2026-03-08T05:30:34.241"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 28,
+  "fields": {
+    "title": "Cosmos",
+    "isbn": "3008",
+    "author": "Carl Sagan",
+    "publisher": "NXB Trẻ",
+    "price": "195000.00",
+    "stock": 14,
+    "description": "Hành trình khám phá vũ trụ",
+    "image_url": "https://picsum.photos/seed/book28/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.268",
+    "updated_at": "2026-03-08T05:30:34.268"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 29,
+  "fields": {
+    "title": "The Selfish Gene",
+    "isbn": "3009",
+    "author": "Richard Dawkins",
+    "publisher": "NXB Thế Giới",
+    "price": "155000.00",
+    "stock": 9,
+    "description": "Gene ích kỷ và tiến hóa",
+    "image_url": "https://picsum.photos/seed/book29/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.299",
+    "updated_at": "2026-03-08T05:30:34.299"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 30,
+  "fields": {
+    "title": "Thinking, Fast and Slow",
+    "isbn": "3010",
+    "author": "Daniel Kahneman",
+    "publisher": "NXB Thế Giới",
+    "price": "175000.00",
+    "stock": 20,
+    "description": "Tư duy nhanh và chậm",
+    "image_url": "https://picsum.photos/seed/book30/300/400",
+    "category_id": 13,
+    "category_name_snapshot": "Khoa học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:34.327",
+    "updated_at": "2026-03-08T05:30:34.327"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 31,
+  "fields": {
+    "title": "Dạy Con Làm Giàu",
+    "isbn": "4001",
+    "author": "Robert Kiyosaki",
+    "publisher": "NXB Trẻ",
+    "price": "115000.00",
+    "stock": 30,
+    "description": "Tư duy tài chính từ sớm",
+    "image_url": "https://picsum.photos/seed/book31/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.527",
+    "updated_at": "2026-03-08T05:30:41.527"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 32,
+  "fields": {
+    "title": "The Intelligent Investor",
+    "isbn": "4002",
+    "author": "Benjamin Graham",
+    "publisher": "NXB Tài Chính",
+    "price": "200000.00",
+    "stock": 15,
+    "description": "Kinh thánh đầu tư giá trị",
+    "image_url": "https://picsum.photos/seed/book32/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.563",
+    "updated_at": "2026-03-08T05:30:41.563"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 33,
+  "fields": {
+    "title": "Tư Duy Triệu Phú",
+    "isbn": "4003",
+    "author": "T. Harv Eker",
+    "publisher": "NXB Tổng Hợp",
+    "price": "95000.00",
+    "stock": 25,
+    "description": "Bí quyết tư duy người giàu",
+    "image_url": "https://picsum.photos/seed/book33/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.598",
+    "updated_at": "2026-03-08T05:30:41.598"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 34,
+  "fields": {
+    "title": "Quốc Phú Luận",
+    "isbn": "4004",
+    "author": "Adam Smith",
+    "publisher": "NXB KHXH",
+    "price": "180000.00",
+    "stock": 8,
+    "description": "Nền tảng kinh tế học hiện đại",
+    "image_url": "https://picsum.photos/seed/book34/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.635",
+    "updated_at": "2026-03-08T05:30:41.635"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 35,
+  "fields": {
+    "title": "Freakonomics",
+    "isbn": "4005",
+    "author": "Steven Levitt",
+    "publisher": "NXB Trẻ",
+    "price": "135000.00",
+    "stock": 18,
+    "description": "Mặt ẩn của mọi thứ",
+    "image_url": "https://picsum.photos/seed/book35/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.670",
+    "updated_at": "2026-03-08T05:30:41.670"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 36,
+  "fields": {
+    "title": "Zero to One",
+    "isbn": "4006",
+    "author": "Peter Thiel",
+    "publisher": "NXB Thế Giới",
+    "price": "150000.00",
+    "stock": 22,
+    "description": "Xây dựng startup từ đầu",
+    "image_url": "https://picsum.photos/seed/book36/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.705",
+    "updated_at": "2026-03-08T05:30:41.705"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 37,
+  "fields": {
+    "title": "The Lean Startup",
+    "isbn": "4007",
+    "author": "Eric Ries",
+    "publisher": "NXB Lao Động",
+    "price": "145000.00",
+    "stock": 16,
+    "description": "Phương pháp khởi nghiệp tinh gọn",
+    "image_url": "https://picsum.photos/seed/book37/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.741",
+    "updated_at": "2026-03-08T05:30:41.741"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 38,
+  "fields": {
+    "title": "Blink",
+    "isbn": "4008",
+    "author": "Malcolm Gladwell",
+    "publisher": "NXB Trẻ",
+    "price": "120000.00",
+    "stock": 20,
+    "description": "Sức mạnh của tư duy tức thì",
+    "image_url": "https://picsum.photos/seed/book38/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.776",
+    "updated_at": "2026-03-08T05:30:41.776"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 39,
+  "fields": {
+    "title": "Good to Great",
+    "isbn": "4009",
+    "author": "Jim Collins",
+    "publisher": "NXB Thế Giới",
+    "price": "165000.00",
+    "stock": 12,
+    "description": "Từ tốt đến vĩ đại",
+    "image_url": "https://picsum.photos/seed/book39/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.812",
+    "updated_at": "2026-03-08T05:30:41.812"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 40,
+  "fields": {
+    "title": "The 4-Hour Work Week",
+    "isbn": "4010",
+    "author": "Timothy Ferriss",
+    "publisher": "NXB Tổng Hợp",
+    "price": "130000.00",
+    "stock": 14,
+    "description": "Làm việc ít hơn sống nhiều hơn",
+    "image_url": "https://picsum.photos/seed/book40/300/400",
+    "category_id": 14,
+    "category_name_snapshot": "Kinh tế",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:41.849",
+    "updated_at": "2026-03-08T05:30:41.849"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 41,
+  "fields": {
+    "title": "Lịch Sử Việt Nam",
+    "isbn": "5001",
+    "author": "Nhiều tác giả",
+    "publisher": "NXB Giáo Dục",
+    "price": "120000.00",
+    "stock": 20,
+    "description": "Toàn cảnh lịch sử Việt Nam",
+    "image_url": "https://picsum.photos/seed/book41/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.014",
+    "updated_at": "2026-03-08T05:30:46.014"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 42,
+  "fields": {
+    "title": "Sapiens",
+    "isbn": "5002",
+    "author": "Yuval Noah Harari",
+    "publisher": "NXB Thế Giới",
+    "price": "175000.00",
+    "stock": 25,
+    "description": "Lược sử văn minh nhân loại",
+    "image_url": "https://picsum.photos/seed/book42/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.043",
+    "updated_at": "2026-03-08T05:30:46.043"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 43,
+  "fields": {
+    "title": "Homo Deus",
+    "isbn": "5003",
+    "author": "Yuval Noah Harari",
+    "publisher": "NXB Thế Giới",
+    "price": "185000.00",
+    "stock": 18,
+    "description": "Lược sử tương lai",
+    "image_url": "https://picsum.photos/seed/book43/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.070",
+    "updated_at": "2026-03-08T05:30:46.070"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 44,
+  "fields": {
+    "title": "Guns Germs and Steel",
+    "isbn": "5004",
+    "author": "Jared Diamond",
+    "publisher": "NXB Thế Giới",
+    "price": "190000.00",
+    "stock": 10,
+    "description": "Tại sao Tây phương thống trị",
+    "image_url": "https://picsum.photos/seed/book44/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.098",
+    "updated_at": "2026-03-08T05:30:46.098"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 45,
+  "fields": {
+    "title": "The Art of War",
+    "isbn": "5005",
+    "author": "Tôn Tử",
+    "publisher": "NXB Văn Học",
+    "price": "75000.00",
+    "stock": 35,
+    "description": "Binh pháp Tôn Tử",
+    "image_url": "https://picsum.photos/seed/book45/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.127",
+    "updated_at": "2026-03-08T05:30:46.127"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 46,
+  "fields": {
+    "title": "Đế Quốc Mông Cổ",
+    "isbn": "5006",
+    "author": "Jack Weatherford",
+    "publisher": "NXB Thế Giới",
+    "price": "160000.00",
+    "stock": 12,
+    "description": "Lịch sử đế chế Mông Cổ",
+    "image_url": "https://picsum.photos/seed/book46/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.156",
+    "updated_at": "2026-03-08T05:30:46.156"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 47,
+  "fields": {
+    "title": "Lịch Sử Trung Quốc",
+    "isbn": "5007",
+    "author": "John Keay",
+    "publisher": "NXB Thế Giới",
+    "price": "200000.00",
+    "stock": 8,
+    "description": "5000 năm văn minh Trung Hoa",
+    "image_url": "https://picsum.photos/seed/book47/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.185",
+    "updated_at": "2026-03-08T05:30:46.185"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 48,
+  "fields": {
+    "title": "Thế Giới Phẳng",
+    "isbn": "5008",
+    "author": "Thomas Friedman",
+    "publisher": "NXB Trẻ",
+    "price": "145000.00",
+    "stock": 15,
+    "description": "Toàn cầu hóa thế kỷ 21",
+    "image_url": "https://picsum.photos/seed/book48/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.214",
+    "updated_at": "2026-03-08T05:30:46.214"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 49,
+  "fields": {
+    "title": "Người Thoát Xác",
+    "isbn": "5009",
+    "author": "Trần Đại Sỹ",
+    "publisher": "NXB Văn Học",
+    "price": "110000.00",
+    "stock": 20,
+    "description": "Lịch sử qua góc nhìn tiểu thuyết",
+    "image_url": "https://picsum.photos/seed/book49/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.244",
+    "updated_at": "2026-03-08T05:30:46.244"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 50,
+  "fields": {
+    "title": "Civilization",
+    "isbn": "5010",
+    "author": "Niall Ferguson",
+    "publisher": "NXB Thế Giới",
+    "price": "170000.00",
+    "stock": 9,
+    "description": "Phương Tây và phần còn lại",
+    "image_url": "https://picsum.photos/seed/book50/300/400",
+    "category_id": 15,
+    "category_name_snapshot": "Lịch sử",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:46.274",
+    "updated_at": "2026-03-08T05:30:46.274"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 51,
+  "fields": {
+    "title": "Atomic Habits",
+    "isbn": "6001",
+    "author": "James Clear",
+    "publisher": "NXB Thế Giới",
+    "price": "165000.00",
+    "stock": 40,
+    "description": "Thói quen nguyên tử thay đổi cuộc đời",
+    "image_url": "https://picsum.photos/seed/book51/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.470",
+    "updated_at": "2026-03-08T05:30:50.470"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 52,
+  "fields": {
+    "title": "The 7 Habits of Highly Effective People",
+    "isbn": "6002",
+    "author": "Stephen Covey",
+    "publisher": "NXB Tổng Hợp",
+    "price": "150000.00",
+    "stock": 30,
+    "description": "7 thói quen người thành đạt",
+    "image_url": "https://picsum.photos/seed/book52/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.531",
+    "updated_at": "2026-03-08T05:30:50.531"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 53,
+  "fields": {
+    "title": "Deep Work",
+    "isbn": "6003",
+    "author": "Cal Newport",
+    "publisher": "NXB Thế Giới",
+    "price": "145000.00",
+    "stock": 25,
+    "description": "Làm việc sâu trong thời đại mất tập trung",
+    "image_url": "https://picsum.photos/seed/book53/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.590",
+    "updated_at": "2026-03-08T05:30:50.590"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 54,
+  "fields": {
+    "title": "Mindset",
+    "isbn": "6004",
+    "author": "Carol Dweck",
+    "publisher": "NXB Trẻ",
+    "price": "130000.00",
+    "stock": 20,
+    "description": "Tư duy phát triển",
+    "image_url": "https://picsum.photos/seed/book54/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.631",
+    "updated_at": "2026-03-08T05:30:50.631"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 55,
+  "fields": {
+    "title": "How to Win Friends",
+    "isbn": "6005",
+    "author": "Dale Carnegie",
+    "publisher": "NXB Tổng Hợp",
+    "price": "110000.00",
+    "stock": 35,
+    "description": "Nghệ thuật giao tiếp và tạo ảnh hưởng",
+    "image_url": "https://picsum.photos/seed/book55/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.677",
+    "updated_at": "2026-03-08T05:30:50.677"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 56,
+  "fields": {
+    "title": "The Power of Now",
+    "isbn": "6006",
+    "author": "Eckhart Tolle",
+    "publisher": "NXB Hội Nhà Văn",
+    "price": "120000.00",
+    "stock": 18,
+    "description": "Sức mạnh của hiện tại",
+    "image_url": "https://picsum.photos/seed/book56/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.721",
+    "updated_at": "2026-03-08T05:30:50.721"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 57,
+  "fields": {
+    "title": "Eat That Frog",
+    "isbn": "6007",
+    "author": "Brian Tracy",
+    "publisher": "NXB Tổng Hợp",
+    "price": "95000.00",
+    "stock": 22,
+    "description": "Chinh phục trì hoãn",
+    "image_url": "https://picsum.photos/seed/book57/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.772",
+    "updated_at": "2026-03-08T05:30:50.772"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 58,
+  "fields": {
+    "title": "Getting Things Done",
+    "isbn": "6008",
+    "author": "David Allen",
+    "publisher": "NXB Thế Giới",
+    "price": "140000.00",
+    "stock": 15,
+    "description": "Nghệ thuật hoàn thành công việc",
+    "image_url": "https://picsum.photos/seed/book58/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.816",
+    "updated_at": "2026-03-08T05:30:50.816"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 59,
+  "fields": {
+    "title": "Ikigai",
+    "isbn": "6009",
+    "author": "Héctor García",
+    "publisher": "NXB Thế Giới",
+    "price": "100000.00",
+    "stock": 45,
+    "description": "Bí quyết sống hạnh phúc của người Nhật",
+    "image_url": "https://picsum.photos/seed/book59/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.861",
+    "updated_at": "2026-03-08T05:30:50.861"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 60,
+  "fields": {
+    "title": "The Subtle Art of Not Giving a F*ck",
+    "isbn": "6010",
+    "author": "Mark Manson",
+    "publisher": "NXB Trẻ",
+    "price": "135000.00",
+    "stock": 28,
+    "description": "Nghệ thuật tinh tế của việc không quan tâm",
+    "image_url": "https://picsum.photos/seed/book60/300/400",
+    "category_id": 16,
+    "category_name_snapshot": "Kỹ năng sống",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:50.891",
+    "updated_at": "2026-03-08T05:30:50.891"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 61,
+  "fields": {
+    "title": "Doraemon Tập 1",
+    "isbn": "7001",
+    "author": "Fujiko F. Fujio",
+    "publisher": "NXB Kim Đồng",
+    "price": "25000.00",
+    "stock": 100,
+    "description": "Mèo máy Doraemon tập 1",
+    "image_url": "https://picsum.photos/seed/book61/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.798",
+    "updated_at": "2026-03-08T05:30:54.798"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 62,
+  "fields": {
+    "title": "Thám Tử Conan Tập 1",
+    "isbn": "7002",
+    "author": "Gosho Aoyama",
+    "publisher": "NXB Kim Đồng",
+    "price": "22000.00",
+    "stock": 80,
+    "description": "Thám tử nhí Conan phá án",
+    "image_url": "https://picsum.photos/seed/book62/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.834",
+    "updated_at": "2026-03-08T05:30:54.834"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 63,
+  "fields": {
+    "title": "Harry Potter và Hòn Đá Phù Thủy",
+    "isbn": "7003",
+    "author": "J.K. Rowling",
+    "publisher": "NXB Trẻ",
+    "price": "120000.00",
+    "stock": 50,
+    "description": "Phần 1 series Harry Potter",
+    "image_url": "https://picsum.photos/seed/book63/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.868",
+    "updated_at": "2026-03-08T05:30:54.868"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 64,
+  "fields": {
+    "title": "Dế Mèn Phiêu Lưu Ký",
+    "isbn": "7004",
+    "author": "Tô Hoài",
+    "publisher": "NXB Kim Đồng",
+    "price": "55000.00",
+    "stock": 60,
+    "description": "Cuộc phiêu lưu của chú dế mèn",
+    "image_url": "https://picsum.photos/seed/book64/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.904",
+    "updated_at": "2026-03-08T05:30:54.904"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 65,
+  "fields": {
+    "title": "Hoàng Tử Bé",
+    "isbn": "7005",
+    "author": "Antoine de Saint-Exupéry",
+    "publisher": "NXB Kim Đồng",
+    "price": "60000.00",
+    "stock": 70,
+    "description": "Câu chuyện nhỏ ý nghĩa lớn",
+    "image_url": "https://picsum.photos/seed/book65/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.941",
+    "updated_at": "2026-03-08T05:30:54.941"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 66,
+  "fields": {
+    "title": "Charlotte Web",
+    "isbn": "7006",
+    "author": "E.B. White",
+    "publisher": "NXB Trẻ",
+    "price": "75000.00",
+    "stock": 40,
+    "description": "Tình bạn giữa nhện và lợn",
+    "image_url": "https://picsum.photos/seed/book66/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:54.976",
+    "updated_at": "2026-03-08T05:30:54.976"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 67,
+  "fields": {
+    "title": "Matilda",
+    "isbn": "7007",
+    "author": "Roald Dahl",
+    "publisher": "NXB Trẻ",
+    "price": "85000.00",
+    "stock": 35,
+    "description": "Cô bé thiên tài Matilda",
+    "image_url": "https://picsum.photos/seed/book67/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:55.013",
+    "updated_at": "2026-03-08T05:30:55.013"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 68,
+  "fields": {
+    "title": "The Giving Tree",
+    "isbn": "7008",
+    "author": "Shel Silverstein",
+    "publisher": "NXB Kim Đồng",
+    "price": "50000.00",
+    "stock": 55,
+    "description": "Cây táo và cậu bé",
+    "image_url": "https://picsum.photos/seed/book68/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:55.050",
+    "updated_at": "2026-03-08T05:30:55.050"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 69,
+  "fields": {
+    "title": "Winnie the Pooh",
+    "isbn": "7009",
+    "author": "A.A. Milne",
+    "publisher": "NXB Kim Đồng",
+    "price": "65000.00",
+    "stock": 45,
+    "description": "Gấu Pooh và những người bạn",
+    "image_url": "https://picsum.photos/seed/book69/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:55.087",
+    "updated_at": "2026-03-08T05:30:55.087"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 70,
+  "fields": {
+    "title": "300 Bài Toán Thiếu Nhi",
+    "isbn": "7010",
+    "author": "Nhiều tác giả",
+    "publisher": "NXB Giáo Dục",
+    "price": "45000.00",
+    "stock": 90,
+    "description": "Toán vui cho thiếu nhi",
+    "image_url": "https://picsum.photos/seed/book70/300/400",
+    "category_id": 17,
+    "category_name_snapshot": "Thiếu nhi",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:55.124",
+    "updated_at": "2026-03-08T05:30:55.124"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 71,
+  "fields": {
+    "title": "Thinking Fast and Slow",
+    "isbn": "8001",
+    "author": "Daniel Kahneman",
+    "publisher": "NXB Thế Giới",
+    "price": "175000.00",
+    "stock": 20,
+    "description": "Hai hệ thống tư duy của con người",
+    "image_url": "https://picsum.photos/seed/book71/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.720",
+    "updated_at": "2026-03-08T05:30:58.720"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 72,
+  "fields": {
+    "title": "Man Search for Meaning",
+    "isbn": "8002",
+    "author": "Viktor Frankl",
+    "publisher": "NXB Thế Giới",
+    "price": "110000.00",
+    "stock": 25,
+    "description": "Đi tìm lẽ sống",
+    "image_url": "https://picsum.photos/seed/book72/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.745",
+    "updated_at": "2026-03-08T05:30:58.745"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 73,
+  "fields": {
+    "title": "The Body Keeps the Score",
+    "isbn": "8003",
+    "author": "Bessel van der Kolk",
+    "publisher": "NXB Thế Giới",
+    "price": "185000.00",
+    "stock": 15,
+    "description": "Trauma và chữa lành",
+    "image_url": "https://picsum.photos/seed/book73/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.772",
+    "updated_at": "2026-03-08T05:30:58.772"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 74,
+  "fields": {
+    "title": "Influence",
+    "isbn": "8004",
+    "author": "Robert Cialdini",
+    "publisher": "NXB Trẻ",
+    "price": "155000.00",
+    "stock": 18,
+    "description": "Tâm lý học thuyết phục",
+    "image_url": "https://picsum.photos/seed/book74/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.797",
+    "updated_at": "2026-03-08T05:30:58.797"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 75,
+  "fields": {
+    "title": "Flow",
+    "isbn": "8005",
+    "author": "Mihaly Csikszentmihalyi",
+    "publisher": "NXB Thế Giới",
+    "price": "140000.00",
+    "stock": 12,
+    "description": "Trạng thái tâm lý tối ưu",
+    "image_url": "https://picsum.photos/seed/book75/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.823",
+    "updated_at": "2026-03-08T05:30:58.823"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 76,
+  "fields": {
+    "title": "Dám Bị Ghét",
+    "isbn": "8006",
+    "author": "Ichiro Kishimi",
+    "publisher": "NXB Thế Giới",
+    "price": "125000.00",
+    "stock": 35,
+    "description": "Triết học Adler về tự do",
+    "image_url": "https://picsum.photos/seed/book76/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.852",
+    "updated_at": "2026-03-08T05:30:58.852"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 77,
+  "fields": {
+    "title": "Emotional Intelligence",
+    "isbn": "8007",
+    "author": "Daniel Goleman",
+    "publisher": "NXB Tổng Hợp",
+    "price": "145000.00",
+    "stock": 22,
+    "description": "Trí tuệ cảm xúc",
+    "image_url": "https://picsum.photos/seed/book77/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.888",
+    "updated_at": "2026-03-08T05:30:58.888"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 78,
+  "fields": {
+    "title": "The Interpretation of Dreams",
+    "isbn": "8008",
+    "author": "Sigmund Freud",
+    "publisher": "NXB KHXH",
+    "price": "160000.00",
+    "stock": 8,
+    "description": "Giải mã giấc mơ của Freud",
+    "image_url": "https://picsum.photos/seed/book78/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.924",
+    "updated_at": "2026-03-08T05:30:58.924"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 79,
+  "fields": {
+    "title": "Grit",
+    "isbn": "8009",
+    "author": "Angela Duckworth",
+    "publisher": "NXB Thế Giới",
+    "price": "135000.00",
+    "stock": 20,
+    "description": "Sức mạnh của đam mê và kiên trì",
+    "image_url": "https://picsum.photos/seed/book79/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.959",
+    "updated_at": "2026-03-08T05:30:58.959"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 80,
+  "fields": {
+    "title": "Awaken the Giant Within",
+    "isbn": "8010",
+    "author": "Tony Robbins",
+    "publisher": "NXB Tổng Hợp",
+    "price": "170000.00",
+    "stock": 16,
+    "description": "Đánh thức người khổng lồ bên trong",
+    "image_url": "https://picsum.photos/seed/book80/300/400",
+    "category_id": 18,
+    "category_name_snapshot": "Tâm lý học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:30:58.994",
+    "updated_at": "2026-03-08T05:30:58.994"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 81,
+  "fields": {
+    "title": "English Grammar in Use",
+    "isbn": "9001",
+    "author": "Raymond Murphy",
+    "publisher": "Cambridge",
+    "price": "195000.00",
+    "stock": 40,
+    "description": "Ngữ pháp tiếng Anh chuẩn nhất",
+    "image_url": "https://picsum.photos/seed/book81/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.441",
+    "updated_at": "2026-03-08T05:31:02.441"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 82,
+  "fields": {
+    "title": "Oxford Word Skills",
+    "isbn": "9002",
+    "author": "Ruth Gairns",
+    "publisher": "Oxford",
+    "price": "175000.00",
+    "stock": 35,
+    "description": "Từ vựng tiếng Anh toàn diện",
+    "image_url": "https://picsum.photos/seed/book82/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.469",
+    "updated_at": "2026-03-08T05:31:02.469"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 83,
+  "fields": {
+    "title": "Toeic 900 Target",
+    "isbn": "9003",
+    "author": "Nhiều tác giả",
+    "publisher": "NXB ĐHQG",
+    "price": "155000.00",
+    "stock": 50,
+    "description": "Chinh phục TOEIC 900+",
+    "image_url": "https://picsum.photos/seed/book83/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.497",
+    "updated_at": "2026-03-08T05:31:02.497"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 84,
+  "fields": {
+    "title": "Minna no Nihongo 1",
+    "isbn": "9004",
+    "author": "3A Corporation",
+    "publisher": "3A Network",
+    "price": "185000.00",
+    "stock": 30,
+    "description": "Giáo trình tiếng Nhật phổ biến nhất",
+    "image_url": "https://picsum.photos/seed/book84/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.524",
+    "updated_at": "2026-03-08T05:31:02.524"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 85,
+  "fields": {
+    "title": "Korean Made Simple",
+    "isbn": "9005",
+    "author": "Billy Go",
+    "publisher": "Go Billy Korean",
+    "price": "165000.00",
+    "stock": 25,
+    "description": "Tiếng Hàn cho người mới bắt đầu",
+    "image_url": "https://picsum.photos/seed/book85/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.551",
+    "updated_at": "2026-03-08T05:31:02.551"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 86,
+  "fields": {
+    "title": "Fluent Forever",
+    "isbn": "9006",
+    "author": "Gabriel Wyner",
+    "publisher": "NXB Thế Giới",
+    "price": "145000.00",
+    "stock": 20,
+    "description": "Học ngoại ngữ nhanh và nhớ lâu",
+    "image_url": "https://picsum.photos/seed/book86/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.585",
+    "updated_at": "2026-03-08T05:31:02.585"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 87,
+  "fields": {
+    "title": "Tiếng Anh Thương Mại",
+    "isbn": "9007",
+    "author": "Nhiều tác giả",
+    "publisher": "NXB ĐHQG",
+    "price": "120000.00",
+    "stock": 28,
+    "description": "Business English thực dụng",
+    "image_url": "https://picsum.photos/seed/book87/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.608",
+    "updated_at": "2026-03-08T05:31:02.608"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 88,
+  "fields": {
+    "title": "Kanji Look and Learn",
+    "isbn": "9008",
+    "author": "Eri Banno",
+    "publisher": "Japan Times",
+    "price": "170000.00",
+    "stock": 22,
+    "description": "Học Kanji qua hình ảnh",
+    "image_url": "https://picsum.photos/seed/book88/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.654",
+    "updated_at": "2026-03-08T05:31:02.654"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 89,
+  "fields": {
+    "title": "Chinese for Beginners",
+    "isbn": "9009",
+    "author": "Nhiều tác giả",
+    "publisher": "NXB ĐHQG",
+    "price": "135000.00",
+    "stock": 18,
+    "description": "Tiếng Trung căn bản",
+    "image_url": "https://picsum.photos/seed/book89/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.680",
+    "updated_at": "2026-03-08T05:31:02.680"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 90,
+  "fields": {
+    "title": "French in Action",
+    "isbn": "9010",
+    "author": "Pierre Capretz",
+    "publisher": "Yale University",
+    "price": "160000.00",
+    "stock": 15,
+    "description": "Học tiếng Pháp theo phương pháp mới",
+    "image_url": "https://picsum.photos/seed/book90/300/400",
+    "category_id": 19,
+    "category_name_snapshot": "Ngoại ngữ",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:02.708",
+    "updated_at": "2026-03-08T05:31:02.708"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 91,
+  "fields": {
+    "title": "Đạo Đức Kinh",
+    "isbn": "10001",
+    "author": "Lão Tử",
+    "publisher": "NXB Văn Học",
+    "price": "85000.00",
+    "stock": 25,
+    "description": "Kinh điển triết học phương Đông",
+    "image_url": "https://picsum.photos/seed/book91/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.334",
+    "updated_at": "2026-03-08T05:31:06.334"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 92,
+  "fields": {
+    "title": "Republic",
+    "isbn": "10002",
+    "author": "Plato",
+    "publisher": "NXB KHXH",
+    "price": "150000.00",
+    "stock": 12,
+    "description": "Triết học chính trị của Plato",
+    "image_url": "https://picsum.photos/seed/book92/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.362",
+    "updated_at": "2026-03-08T05:31:06.362"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 93,
+  "fields": {
+    "title": "Nicomachean Ethics",
+    "isbn": "10003",
+    "author": "Aristotle",
+    "publisher": "NXB KHXH",
+    "price": "140000.00",
+    "stock": 10,
+    "description": "Đạo đức học của Aristotle",
+    "image_url": "https://picsum.photos/seed/book93/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.389",
+    "updated_at": "2026-03-08T05:31:06.389"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 94,
+  "fields": {
+    "title": "Meditations",
+    "isbn": "10004",
+    "author": "Marcus Aurelius",
+    "publisher": "NXB Hội Nhà Văn",
+    "price": "110000.00",
+    "stock": 30,
+    "description": "Suy tư của Hoàng đế Marcus Aurelius",
+    "image_url": "https://picsum.photos/seed/book94/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.415",
+    "updated_at": "2026-03-08T05:31:06.415"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 95,
+  "fields": {
+    "title": "Thus Spoke Zarathustra",
+    "isbn": "10005",
+    "author": "Friedrich Nietzsche",
+    "publisher": "NXB Văn Học",
+    "price": "130000.00",
+    "stock": 15,
+    "description": "Triết học Nietzsche",
+    "image_url": "https://picsum.photos/seed/book95/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.443",
+    "updated_at": "2026-03-08T05:31:06.443"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 96,
+  "fields": {
+    "title": "Being and Time",
+    "isbn": "10006",
+    "author": "Martin Heidegger",
+    "publisher": "NXB KHXH",
+    "price": "165000.00",
+    "stock": 8,
+    "description": "Triết học hiện sinh Heidegger",
+    "image_url": "https://picsum.photos/seed/book96/300/400",
+    "category_id": 20,
+    "category_name_snapshot": "Triết học",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.473",
+    "updated_at": "2026-03-08T05:31:06.473"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 97,
+  "fields": {
+    "title": "The Story of Art",
+    "isbn": "10007",
+    "author": "E.H. Gombrich",
+    "publisher": "NXB Thế Giới",
+    "price": "220000.00",
+    "stock": 10,
+    "description": "Lịch sử nghệ thuật toàn diện",
+    "image_url": "https://picsum.photos/seed/book97/300/400",
+    "category_id": 21,
+    "category_name_snapshot": "Nghệ thuật",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.500",
+    "updated_at": "2026-03-08T05:31:06.500"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 98,
+  "fields": {
+    "title": "Ways of Seeing",
+    "isbn": "10008",
+    "author": "John Berger",
+    "publisher": "NXB Thế Giới",
+    "price": "145000.00",
+    "stock": 15,
+    "description": "Cách nhìn nghệ thuật",
+    "image_url": "https://picsum.photos/seed/book98/300/400",
+    "category_id": 21,
+    "category_name_snapshot": "Nghệ thuật",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.529",
+    "updated_at": "2026-03-08T05:31:06.530"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 99,
+  "fields": {
+    "title": "The Elements of Typographic Style",
+    "isbn": "10009",
+    "author": "Robert Bringhurst",
+    "publisher": "NXB Mỹ Thuật",
+    "price": "195000.00",
+    "stock": 12,
+    "description": "Kinh điển về typography",
+    "image_url": "https://picsum.photos/seed/book99/300/400",
+    "category_id": 21,
+    "category_name_snapshot": "Nghệ thuật",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.557",
+    "updated_at": "2026-03-08T05:31:06.557"
+  }
+},
+{
+  "model": "books.book",
+  "pk": 100,
+  "fields": {
+    "title": "Steal Like an Artist",
+    "isbn": "10010",
+    "author": "Austin Kleon",
+    "publisher": "NXB Trẻ",
+    "price": "115000.00",
+    "stock": 25,
+    "description": "10 điều nghệ sĩ cần biết",
+    "image_url": "https://picsum.photos/seed/book100/300/400",
+    "category_id": 21,
+    "category_name_snapshot": "Nghệ thuật",
+    "status": "ACTIVE",
+    "created_at": "2026-03-08T05:31:06.586",
+    "updated_at": "2026-03-08T05:31:06.586"
+  }
+}
+]
