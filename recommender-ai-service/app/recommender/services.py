@@ -56,7 +56,7 @@ def _rule_based_fallback(
     book_map: Dict[int, Dict[str, Any]],
     top_n: int,
 ) -> List[Dict[str, Any]]:
-    """Original rule-based scoring used as fallback when Gemini is unavailable."""
+    """Original rule-based scoring used as fallback when OpenAI is unavailable."""
     from collections import Counter
 
     category_counter = Counter()
@@ -119,16 +119,16 @@ def _rule_based_fallback(
     return [payload for _, payload in candidates[:top_n]]
 
 
-def _recommend_with_gemini(
+def _recommend_with_openai(
     purchased_books_info: List[Dict[str, Any]],
     candidate_books: List[Dict[str, Any]],
     rating_map: Dict[int, float],
     top_n: int,
 ) -> List[Dict[str, Any]]:
-    """Call Google Gemini gemini-2.0-flash to select and explain recommendations."""
-    from google import genai
+    """Call OpenAI gpt-4o-mini to select and explain recommendations."""
+    from openai import OpenAI
 
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
     # Build purchase history summary
     if purchased_books_info:
@@ -172,8 +172,12 @@ Respond ONLY with a valid JSON array (no markdown, no explanation outside JSON) 
 ]
 """
 
-    response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
-    raw = response.text.strip()
+    response = client.chat.completions.create(
+        model='gpt-4o-mini',
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+    )
+    raw = response.choices[0].message.content.strip()
 
     # Strip markdown code fences if present
     if raw.startswith("```"):
@@ -182,12 +186,12 @@ Respond ONLY with a valid JSON array (no markdown, no explanation outside JSON) 
             raw = raw[4:]
         raw = raw.strip()
 
-    gemini_picks = json.loads(raw)
+    ai_picks = json.loads(raw)
 
     # Build final result enriched with book data
     result = []
     candidate_map = {b['id']: b for b in candidate_books if 'id' in b}
-    for pick in gemini_picks[:top_n]:
+    for pick in ai_picks[:top_n]:
         book_id = pick.get('book_id')
         book = candidate_map.get(book_id)
         if not book:
@@ -196,7 +200,7 @@ Respond ONLY with a valid JSON array (no markdown, no explanation outside JSON) 
         result.append({
             'book_id': book_id,
             'title': book.get('title'),
-            'score': None,  # Gemini-based; no numeric score
+            'score': None,  # OpenAI-based; no numeric score
             'reason': pick.get('reason', 'Recommended by AI'),
             'average_rating': round(avg_rating, 2),
             'category_id': book.get('category_id'),
@@ -230,18 +234,18 @@ def compute_recommendations(customer_id: int, top_n: int = TOP_N) -> List[Dict[s
     # Purchased books info for context
     purchased_books_info = [book_map[bid] for bid in purchased_ids if bid in book_map]
 
-    # Try Gemini first; fall back to rule-based on any error
-    gemini_key = getattr(settings, 'GEMINI_API_KEY', '')
-    if gemini_key and candidate_books:
+    # Try OpenAI first; fall back to rule-based on any error
+    openai_key = getattr(settings, 'OPENAI_API_KEY', '')
+    if openai_key and candidate_books:
         try:
-            return _recommend_with_gemini(
+            return _recommend_with_openai(
                 purchased_books_info=purchased_books_info,
                 candidate_books=candidate_books,
                 rating_map=rating_map,
                 top_n=top_n,
             )
         except Exception as exc:
-            logger.warning("Gemini recommendation failed, falling back to rule-based: %s", exc)
+            logger.warning("OpenAI recommendation failed, falling back to rule-based: %s", exc)
 
     # Fallback
     return _rule_based_fallback(
