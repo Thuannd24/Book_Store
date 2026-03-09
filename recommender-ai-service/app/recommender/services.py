@@ -1,5 +1,7 @@
 import json
 import logging
+import threading
+import time
 from typing import Any, Dict, List
 
 import requests
@@ -15,6 +17,104 @@ class ServiceError(Exception):
     """Raised when a downstream service cannot be reached or returns bad data."""
 
 
+# ---------------------------------------------------------------------------
+# Circuit Breaker (pure-Python, zero external dependencies)
+# ---------------------------------------------------------------------------
+
+_cb_logger = logging.getLogger('circuit_breaker')
+
+
+class CircuitBreakerOpenError(Exception):
+    """Raised when a circuit breaker is OPEN and the call is rejected."""
+
+
+class CircuitBreaker:
+    """
+    Simple in-process Circuit Breaker with CLOSED / OPEN / HALF_OPEN states.
+
+    States:
+        CLOSED     – normal operation, failures are counted.
+        OPEN       – fast-fail, no calls pass through until recovery_timeout expires.
+        HALF_OPEN  – one trial call is allowed; success → CLOSED, failure → OPEN.
+
+    Thread-safe via threading.Lock.
+    """
+
+    _STATE_CLOSED    = 'CLOSED'
+    _STATE_OPEN      = 'OPEN'
+    _STATE_HALF_OPEN = 'HALF_OPEN'
+
+    def __init__(self, name, failure_threshold=3, recovery_timeout=30.0):
+        self.name = name
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout  = recovery_timeout
+
+        self._state          = self._STATE_CLOSED
+        self._failure_count  = 0
+        self._opened_at      = None
+        self._lock           = threading.Lock()
+
+    @property
+    def state(self):
+        with self._lock:
+            return self._get_state_locked()
+
+    def _get_state_locked(self):
+        """Must be called with self._lock held."""
+        if self._state == self._STATE_OPEN:
+            if self._opened_at and (time.monotonic() - self._opened_at) >= self.recovery_timeout:
+                self._state = self._STATE_HALF_OPEN
+                _cb_logger.info('[CircuitBreaker:%s] OPEN → HALF_OPEN', self.name)
+        return self._state
+
+    def call(self, func, *args, **kwargs):
+        """Execute func if the circuit allows it; otherwise raise CircuitBreakerOpenError."""
+        with self._lock:
+            state = self._get_state_locked()
+            if state == self._STATE_OPEN:
+                raise CircuitBreakerOpenError(
+                    f'Circuit breaker [{self.name}] is OPEN – rejecting call'
+                )
+
+        try:
+            result = func(*args, **kwargs)
+            self._on_success()
+            return result
+        except Exception:
+            self._on_failure()
+            raise
+
+    def _on_success(self):
+        with self._lock:
+            if self._state == self._STATE_HALF_OPEN:
+                _cb_logger.info('[CircuitBreaker:%s] HALF_OPEN → CLOSED', self.name)
+            self._state         = self._STATE_CLOSED
+            self._failure_count = 0
+            self._opened_at     = None
+
+    def _on_failure(self):
+        with self._lock:
+            self._failure_count += 1
+            _cb_logger.warning(
+                '[CircuitBreaker:%s] failure #%d (threshold=%d)',
+                self.name, self._failure_count, self.failure_threshold,
+            )
+            if self._failure_count >= self.failure_threshold or self._state == self._STATE_HALF_OPEN:
+                self._state     = self._STATE_OPEN
+                self._opened_at = time.monotonic()
+                _cb_logger.error(
+                    '[CircuitBreaker:%s] OPEN (will retry after %ss)',
+                    self.name, self.recovery_timeout,
+                )
+
+
+_order_cb  = CircuitBreaker(name='order-service')
+_book_cb   = CircuitBreaker(name='book-service')
+_review_cb = CircuitBreaker(name='comment-rate-service')
+
+# ---------------------------------------------------------------------------
+
+
 def _fetch_json(url: str) -> Any:
     try:
         resp = requests.get(url, timeout=DEFAULT_TIMEOUT)
@@ -27,7 +127,10 @@ def _fetch_json(url: str) -> Any:
 
 def fetch_purchase_history(customer_id: int) -> Dict[str, Any]:
     url = f"{settings.ORDER_SERVICE_URL.rstrip('/')}/internal/orders/customer/{customer_id}/history/"
-    data = _fetch_json(url)
+    try:
+        data = _order_cb.call(_fetch_json, url)
+    except CircuitBreakerOpenError:
+        raise ServiceError('circuit open: order-service')
     if not isinstance(data, dict) or 'books' not in data:
         raise ServiceError("unexpected purchase history format")
     return data
@@ -35,7 +138,10 @@ def fetch_purchase_history(customer_id: int) -> Dict[str, Any]:
 
 def fetch_books() -> List[Dict[str, Any]]:
     url = f"{settings.BOOK_SERVICE_URL.rstrip('/')}/api/books/"
-    data = _fetch_json(url)
+    try:
+        data = _book_cb.call(_fetch_json, url)
+    except CircuitBreakerOpenError:
+        raise ServiceError('circuit open: book-service')
     if not isinstance(data, list):
         raise ServiceError("unexpected books list format")
     return data
@@ -43,7 +149,10 @@ def fetch_books() -> List[Dict[str, Any]]:
 
 def fetch_ratings() -> List[Dict[str, Any]]:
     url = f"{settings.REVIEW_SERVICE_URL.rstrip('/')}/api/reviews/books/summary/averages/"
-    data = _fetch_json(url)
+    try:
+        data = _review_cb.call(_fetch_json, url)
+    except CircuitBreakerOpenError:
+        raise ServiceError('circuit open: comment-rate-service')
     if not isinstance(data, list):
         raise ServiceError("unexpected ratings list format")
     return data

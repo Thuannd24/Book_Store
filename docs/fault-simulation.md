@@ -146,3 +146,33 @@ docker compose exec order-db psql -U postgres -d order_db -c \
 | 1 | RESERVE_SHIPPING | STARTED |
 | 1 | RESERVE_SHIPPING | FAILED |
 | 1 | RESERVE_PAYMENT | COMPENSATED |
+
+---
+
+## Scenario 4: Circuit Breaker Tripping
+
+### Trigger
+Send 3 requests to create an order while `pay-service` is stopped:
+```bash
+docker compose stop pay-service
+for i in 1 2 3 4; do
+  curl -s -X POST http://localhost:8080/api/gateway/orders/orders/ \
+    -H "Content-Type: application/json" \
+    -d '{"customer_id":1,"payment_method":"COD","shipping_method":"STANDARD","shipping_address":"123 St","shipping_fee":"5.00"}' \
+    | python3 -m json.tool
+done
+```
+
+### Expected behaviour
+- Requests 1–3: HTTP 502 (circuit attempts the call, failure is counted).
+- Request 4+: HTTP 503 with `"pay-service circuit open"` (circuit is now OPEN, call rejected instantly).
+- After 30 seconds: circuit transitions to HALF_OPEN and the next call is a probe.
+
+### Check circuit state
+```bash
+curl http://localhost:8080/api/circuit-breakers/
+```
+Expected response:
+```json
+{"customers": "CLOSED", "books": "CLOSED", "orders": "OPEN", "carts": "CLOSED", "reviews": "CLOSED", "recommendations": "CLOSED", "catalog": "CLOSED", "staff": "CLOSED", "managers": "CLOSED"}
+```
