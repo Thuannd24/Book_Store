@@ -43,6 +43,9 @@ TOTAL_REQUESTS=12             # requests cần gửi để demo (> workers × th
 # (Gunicorn round-robin; 0.3s đủ để mỗi worker nhận ít nhất 1 request)
 REQUEST_DELAY=0.3
 
+# Biến global để send_request() trả về HTTP status code mà không ảnh hưởng stdout
+LAST_HTTP_CODE=""
+
 # Đường dẫn docker-compose.yml (tự động tìm từ vị trí script)
 COMPOSE_FILE="$(dirname "$(realpath "$0")")/../docker-compose.yml"
 
@@ -74,8 +77,9 @@ pause() {
     echo ""
 }
 
-# Gửi 1 HTTP request, hiển thị status code và response body (rút gọn)
-# Trả về HTTP status code qua stdout cuối cùng
+# Gửi 1 HTTP request, in status code và response body rút gọn ra terminal.
+# HTTP status code được lưu vào biến global LAST_HTTP_CODE để caller đọc lại.
+# Hàm KHÔNG dùng echo để trả kết quả qua stdout, tránh bị nuốt khi dùng $(...).
 send_request() {
     local label="$1"
     local url="$2"
@@ -107,8 +111,9 @@ send_request() {
         echo -e "    ${RED}↳ ${short_body}${RESET}"
     fi
 
-    # Trả về http_code để caller kiểm tra nếu cần
-    echo "${http_code}"
+    # Lưu kết quả vào biến global để caller đọc (không dùng echo/return để tránh
+    # bị nuốt khi hàm được gọi trong subshell qua $(send_request ...))
+    LAST_HTTP_CODE="${http_code}"
 }
 
 # Hiển thị CB status dưới dạng bảng có màu
@@ -172,19 +177,19 @@ show_cb_status
 echo ""
 
 echo -e "  ${CYAN}→ Gọi API cart qua gateway (phải thành công):${RESET}"
-send_request "GET cart/customer/1 (qua gateway)" "${CART_VIA_GW_URL}" > /dev/null
+send_request "GET cart/customer/1 (qua gateway)" "${CART_VIA_GW_URL}"
 
 echo ""
 echo -e "  ${CYAN}→ Gọi health check qua gateway:${RESET}"
-send_request "GET /api/health/ (gateway)" "${GATEWAY_HEALTH_URL}" > /dev/null
+send_request "GET /api/health/ (gateway)" "${GATEWAY_HEALTH_URL}"
 
 echo ""
 echo -e "  ${CYAN}→ Gọi cart health qua gateway:${RESET}"
-send_request "GET cart/api/health/ (qua gateway)" "${CART_HEALTH_VIA_GW_URL}" > /dev/null
+send_request "GET cart/api/health/ (qua gateway)" "${CART_HEALTH_VIA_GW_URL}"
 
 echo ""
 echo -e "  ${CYAN}→ Gọi cart trực tiếp (port 8086):${RESET}"
-send_request "GET /api/health/ (trực tiếp)" "${CART_HEALTH_DIRECT_URL}" > /dev/null
+send_request "GET /api/health/ (trực tiếp)" "${CART_HEALTH_DIRECT_URL}"
 
 echo ""
 echo -e "  ${GREEN}✔  Hệ thống hoạt động bình thường. Tất cả CB đang CLOSED.${RESET}"
@@ -213,8 +218,9 @@ count_503=0
 count_2xx=0
 
 for i in $(seq 1 "${TOTAL_REQUESTS}"); do
-    code=$(send_request "Request #${i}" "${CART_VIA_GW_URL}")
-    case "${code}" in
+    # send_request in kết quả ra terminal và lưu HTTP code vào LAST_HTTP_CODE
+    send_request "Request #${i}" "${CART_VIA_GW_URL}"
+    case "${LAST_HTTP_CODE}" in
         502) (( count_502++ )) ;;
         503) (( count_503++ )) ;;
         2*)  (( count_2xx++ )) ;;
@@ -283,7 +289,7 @@ pause
 phase_header "5" "CB tự phục hồi → CLOSED (1 request thành công)"
 
 echo -e "  ${CYAN}→ Gửi 1 request để kích hoạt HALF_OPEN → CLOSED:${RESET}"
-send_request "GET cart/customer/1 (trial request)" "${CART_VIA_GW_URL}" > /dev/null
+send_request "GET cart/customer/1 (trial request)" "${CART_VIA_GW_URL}"
 echo ""
 
 echo -e "  ${CYAN}→ Kiểm tra CB status (tất cả phải CLOSED):${RESET}"
@@ -291,8 +297,8 @@ show_cb_status
 echo ""
 
 echo -e "  ${CYAN}→ Kiểm tra lại health check:${RESET}"
-send_request "GET cart/api/health/ (qua gateway)" "${CART_HEALTH_VIA_GW_URL}" > /dev/null
-send_request "GET /api/health/ (trực tiếp)"       "${CART_HEALTH_DIRECT_URL}" > /dev/null
+send_request "GET cart/api/health/ (qua gateway)" "${CART_HEALTH_VIA_GW_URL}"
+send_request "GET /api/health/ (trực tiếp)"       "${CART_HEALTH_DIRECT_URL}"
 
 pause
 
