@@ -47,7 +47,44 @@ REQUEST_DELAY=0.3
 LAST_HTTP_CODE=""
 
 # Đường dẫn docker-compose.yml (tự động tìm từ vị trí script)
-COMPOSE_FILE="$(dirname "$(realpath "$0")")/../docker-compose.yml"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+COMPOSE_FILE="${SCRIPT_DIR}/../docker-compose.yml"
+
+# ---------------------------------------------------------------------------
+# Kiểm tra công cụ bắt buộc
+# ---------------------------------------------------------------------------
+check_dependencies() {
+    local missing=0
+    for tool in curl docker; do
+        if ! command -v "${tool}" >/dev/null 2>&1; then
+            echo -e "${RED}Lỗi: công cụ '${tool}' không được tìm thấy. Vui lòng cài đặt trước khi chạy script.${RESET}"
+            missing=1
+        fi
+    done
+    # Kiểm tra Docker Compose (V2: 'docker compose', V1: 'docker-compose')
+    if command -v docker >/dev/null 2>&1; then
+        if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev/null 2>&1; then
+            echo -e "${RED}Lỗi: không tìm thấy 'docker compose' (V2) hoặc 'docker-compose' (V1). Vui lòng cài đặt Docker Compose.${RESET}"
+            missing=1
+        fi
+    fi
+    if [[ "${missing}" -eq 1 ]]; then
+        exit 1
+    fi
+}
+check_dependencies
+
+# Wrapper cho docker compose hỗ trợ cả V2 (docker compose) và V1 (docker-compose)
+run_compose() {
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        docker-compose "$@"
+    else
+        echo -e "${RED}Lỗi: không tìm thấy 'docker compose' hoặc 'docker-compose'.${RESET}" >&2
+        return 1
+    fi
+}
 
 # ---------------------------------------------------------------------------
 # Hàm tiện ích
@@ -202,8 +239,7 @@ pause
 phase_header "2" "Tắt cart-service → CB đếm lỗi (502 → 503)"
 
 echo -e "  ${YELLOW}→ Đang tắt cart-service...${RESET}"
-docker compose -f "${COMPOSE_FILE}" stop cart-service 2>/dev/null \
-    || docker compose stop cart-service 2>/dev/null \
+run_compose -f "${COMPOSE_FILE}" stop cart-service \
     || echo -e "  ${RED}Không thể dừng cart-service tự động. Hãy chạy thủ công: docker compose stop cart-service${RESET}"
 echo -e "  ${GREEN}✔  cart-service đã tắt.${RESET}"
 echo ""
@@ -260,8 +296,7 @@ pause
 phase_header "4" "Bật lại cart-service + đợi recovery timeout (${CB_RECOVERY_TIMEOUT}s)"
 
 echo -e "  ${YELLOW}→ Đang bật lại cart-service...${RESET}"
-docker compose -f "${COMPOSE_FILE}" start cart-service 2>/dev/null \
-    || docker compose start cart-service 2>/dev/null \
+run_compose -f "${COMPOSE_FILE}" start cart-service \
     || echo -e "  ${RED}Không thể khởi động cart-service tự động. Hãy chạy thủ công: docker compose start cart-service${RESET}"
 echo -e "  ${GREEN}✔  cart-service đã bật lại.${RESET}"
 echo ""
