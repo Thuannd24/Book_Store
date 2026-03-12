@@ -25,6 +25,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
     payment_status = models.CharField(max_length=32, blank=True, default='')
     shipping_status = models.CharField(max_length=32, blank=True, default='')
+    promo_code = models.CharField(max_length=64, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -63,3 +64,30 @@ class SagaLog(models.Model):
 
     def __str__(self):
         return f'SagaLog(order_id={self.order_id}, step={self.step}, status={self.status})'
+
+
+class PromoCode(models.Model):
+    class Status(models.TextChoices):
+        UNUSED = 'UNUSED', 'Unused'
+        RESERVED = 'RESERVED', 'Reserved'
+        USED = 'USED', 'Used'
+        RETURNED = 'RETURNED', 'Returned'
+        EXPIRED = 'EXPIRED', 'Expired'
+
+    code = models.CharField(max_length=64, unique=True)
+    customer_id = models.IntegerField(db_index=True)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    max_discount_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.UNUSED)
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_to = models.DateTimeField(null=True, blank=True)
+    applied_order_id = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'promo_codes'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'PromoCode(code={self.code}, customer_id={self.customer_id}, status={self.status})'

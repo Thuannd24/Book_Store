@@ -19,3 +19,9 @@ export const getAllOrders = () =>
 // Update order status (staff action)
 export const updateOrderStatus = (orderId, newStatus) =>
   api.patch(`/gateway/orders/api/orders/${orderId}/status/`, { status: newStatus }).then((r) => r.data)
+
+// Get promos for a customer
+export const getCustomerPromos = (customerId) =>
+  api
+    .get(`/gateway/orders/api/customers/${customerId}/promos/`)
+    .then((r) => (r.data && Array.isArray(r.data.promos) ? r.data.promos : []))

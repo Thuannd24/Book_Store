@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCart } from '../../api/cart'
-import { createOrder } from '../../api/orders'
+import { createOrder, getCustomerPromos } from '../../api/orders'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '../../components/common/Button'
 import { Input, Select } from '../../components/common/Input'
@@ -20,14 +20,20 @@ export default function CheckoutPage() {
     shipping_address: customer?.address || '',
     payment_method: 'COD',
     shipping_method: 'STANDARD',
+    promo_code: '',
   })
   const [errors, setErrors] = useState({})
+  const [promos, setPromos] = useState([])
 
   useEffect(() => {
     getCart(customer.id)
       .then(setCart)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
+
+    getCustomerPromos(customer.id)
+      .then(setPromos)
+      .catch(() => {})
   }, [customer.id])
 
   const shippingFee = form.shipping_method === 'EXPRESS' ? 50000 : 20000
@@ -112,6 +118,21 @@ export default function CheckoutPage() {
                   🏠 Pay when your order arrives.
                 </p>
               )}
+            </div>
+
+            <div className="bg-white rounded-2xl border p-6 flex flex-col gap-4">
+              <h2 className="font-semibold text-gray-700">Promo Code</h2>
+              <Select
+                label="Enter promo code"
+                {...field('promo_code')}
+              >
+                <option value="">No promo code</option>
+                {promos.map((p) => (
+                  <option key={p.code} value={p.code}>
+                    {p.code} — {p.percentage}% (tối đa {formatCurrency(p.max_discount_amount)})
+                  </option>
+                ))}
+              </Select>
             </div>
           </div>
 

@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.db import transaction
 
-from .models import Order, OrderItem, SagaLog
+from .models import Order, OrderItem, SagaLog, PromoCode
 from .services import (
     fetch_cart_for_order,
     clear_cart,
@@ -58,7 +58,7 @@ class OrderSaga:
       - CONFIRM_ORDER fails     → cancel both payment and shipment
     """
 
-    def __init__(self, customer_id, payment_method, shipping_method, shipping_address, shipping_fee):
+    def __init__(self, customer_id, payment_method, shipping_method, shipping_address, shipping_fee, promo_code=None):
         self.customer_id = customer_id
         self.payment_method = payment_method
         self.shipping_method = shipping_method
@@ -67,6 +67,8 @@ class OrderSaga:
         self.order = None
         self.payment_id = None
         self.shipment_id = None
+        self.promo_code_str = promo_code or ''
+        self.applied_promo = None
 
     def run(self):
         """Execute the saga. Returns (order, error_message, http_status_code)."""
@@ -82,6 +84,34 @@ class OrderSaga:
 
         total_amount = Decimal(str(cart['total_amount'])) + self.shipping_fee
 
+        discount_amount = Decimal('0.00')
+        if self.promo_code_str:
+            try:
+                promo = PromoCode.objects.select_for_update().get(
+                    code=self.promo_code_str,
+                    customer_id=self.customer_id,
+                    status__in=[PromoCode.Status.UNUSED, PromoCode.Status.RETURNED],
+                )
+            except PromoCode.DoesNotExist:
+                return None, 'Invalid or unavailable promo code.', 400
+
+            self.applied_promo = promo
+
+            # Basic validity window check if configured
+            from django.utils import timezone
+
+            now = timezone.now()
+            if promo.valid_from and promo.valid_from > now:
+                return None, 'Promo code is not yet valid.', 400
+            if promo.valid_to and promo.valid_to < now:
+                return None, 'Promo code has expired.', 400
+
+            percentage = promo.percentage / Decimal('100')
+            raw_discount = (Decimal(str(cart['total_amount'])) * percentage).quantize(Decimal('0.01'))
+            max_discount = promo.max_discount_amount
+            discount_amount = min(raw_discount, max_discount)
+            total_amount = (total_amount - discount_amount).quantize(Decimal('0.01'))
+
         # Step 1: CREATE_ORDER
         try:
             with transaction.atomic():
@@ -95,6 +125,7 @@ class OrderSaga:
                     total_amount=total_amount,
                     payment_status='PENDING',
                     shipping_status='PENDING',
+                    promo_code=self.promo_code_str,
                 )
                 order_items = [
                     OrderItem(
@@ -108,6 +139,11 @@ class OrderSaga:
                     for item in items
                 ]
                 OrderItem.objects.bulk_create(order_items)
+
+                if self.applied_promo:
+                    self.applied_promo.status = PromoCode.Status.RESERVED
+                    self.applied_promo.applied_order_id = self.order.id
+                    self.applied_promo.save(update_fields=['status', 'applied_order_id'])
                 _log(self.order.id, STEP_CREATE_ORDER, LOG_COMPLETED, {'cart_id': cart['id']})
         except Exception as exc:
             logger.error('CREATE_ORDER failed: %s', exc)
@@ -178,6 +214,7 @@ class OrderSaga:
         try:
             self.order.status = Order.Status.FAILED
             self.order.save(update_fields=['status'])
+            self._refund_promo_if_any()
         except Exception as exc:
             logger.error('Failed to mark order as FAILED: %s', exc)
 
@@ -199,6 +236,7 @@ class OrderSaga:
         self.order.status = Order.Status.COMPENSATED
         self.order.payment_status = 'CANCELLED'
         self.order.save(update_fields=['status', 'payment_status'])
+        self._refund_promo_if_any()
 
     def _compensate_shipment(self):
         if self.shipment_id:
@@ -214,3 +252,23 @@ class OrderSaga:
                 })
         self.order.shipping_status = 'CANCELLED'
         self.order.save(update_fields=['shipping_status'])
+
+    def _refund_promo_if_any(self):
+        """
+        Return promo code to a reusable state if the order never reached DELIVERED.
+        """
+        if not self.order or not self.order.promo_code:
+            return
+
+        try:
+            promo = PromoCode.objects.get(
+                code=self.order.promo_code,
+                customer_id=self.customer_id,
+            )
+        except PromoCode.DoesNotExist:
+            return
+
+        if promo.status in [PromoCode.Status.RESERVED, PromoCode.Status.UNUSED]:
+            promo.status = PromoCode.Status.RETURNED
+            promo.applied_order_id = None
+            promo.save(update_fields=['status', 'applied_order_id'])

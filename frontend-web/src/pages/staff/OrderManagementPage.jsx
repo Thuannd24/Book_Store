@@ -124,6 +124,7 @@ export default function OrderManagementPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Address</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Method</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600">Total</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Promo</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Shipping</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Date</th>
@@ -155,6 +156,13 @@ export default function OrderManagementPage() {
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-gray-800">
                       {formatCurrency(order.total_amount)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-xs">
+                      {order.promo_code ? (
+                        <span className="font-mono" title={order.promo_code}>{order.promo_code}</span>
+                      ) : (
+                        '—'
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <Badge color={STATUS_COLOR[order.status] || 'gray'}>{order.status}</Badge>
