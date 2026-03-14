@@ -26,14 +26,10 @@ export default function CheckoutPage() {
   const [promos, setPromos] = useState([])
 
   useEffect(() => {
-    getCart(customer.id)
-      .then(setCart)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false))
-
-    getCustomerPromos(customer.id)
-      .then(setPromos)
-      .catch(() => {})
+    Promise.all([
+      getCart(customer.id).then(setCart).catch((e) => setError(e.message)),
+      getCustomerPromos(customer.id).then(setPromos).catch(() => {}),
+    ]).finally(() => setLoading(false))
   }, [customer.id])
 
   const shippingFee = form.shipping_method === 'EXPRESS' ? 50000 : 20000
