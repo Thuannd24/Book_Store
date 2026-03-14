@@ -1,3 +1,4 @@
+import uuid
 from decimal import Decimal
 from collections import defaultdict
 
@@ -6,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.db import connection
+from django.db import connection, transaction
 
 from orders.infrastructure.orm_models import Order, OrderItem, PromoCode
 from orders.infrastructure.serializers import OrderSerializer, CreateOrderSerializer
@@ -103,8 +104,8 @@ class CustomerPromoListView(APIView):
         data = [
             {
                 'code': p.code,
-                'percentage': str(p.percentage),
-                'max_discount_amount': str(p.max_discount_amount),
+                'percentage': float(p.percentage),
+                'max_discount_amount': float(p.max_discount_amount),
                 'status': p.status,
                 'valid_from': p.valid_from,
                 'valid_to': p.valid_to,
@@ -112,6 +113,7 @@ class CustomerPromoListView(APIView):
             for p in promos
         ]
         return Response({'customer_id': customer_id, 'promos': data})
+
 
 class OrderStatusUpdateView(APIView):
     """
@@ -148,14 +150,11 @@ class OrderStatusUpdateView(APIView):
             )
 
         order.status = new_status
-        if new_status == 'SHIPPING':
+        if new_status == Order.Status.SHIPPING:
             order.shipping_status = 'SHIPPING'
             order.save(update_fields=['status', 'shipping_status'])
-        elif new_status == 'DELIVERED':
+        elif new_status == Order.Status.DELIVERED:
             order.shipping_status = 'DELIVERED'
-
-            from django.db import transaction
-
             with transaction.atomic():
                 order.save(update_fields=['status', 'shipping_status'])
 
@@ -166,45 +165,37 @@ class OrderStatusUpdateView(APIView):
                             code=order.promo_code,
                             customer_id=order.customer_id,
                         )
+                        if promo.status in [PromoCode.Status.RESERVED, PromoCode.Status.UNUSED, PromoCode.Status.RETURNED]:
+                            promo.status = PromoCode.Status.USED
+                            promo.applied_order_id = order.id
+                            promo.save(update_fields=['status', 'applied_order_id'])
                     except PromoCode.DoesNotExist:
-                        promo = None
-
-                    if promo and promo.status in [PromoCode.Status.RESERVED, PromoCode.Status.UNUSED, PromoCode.Status.RETURNED]:
-                        promo.status = PromoCode.Status.USED
-                        promo.applied_order_id = order.id
-                        promo.save(update_fields=['status', 'applied_order_id'])
+                        pass
 
                 # Issue new promo codes based on delivered order count
                 delivered_count = Order.objects.filter(
                     customer_id=order.customer_id,
-                    shipping_status='DELIVERED',
+                    status=Order.Status.DELIVERED,
                 ).count()
 
-                promo_to_create = None
-                if delivered_count == 1:
-                    promo_to_create = {'percentage': 5, 'max_discount': 30000}
-                elif delivered_count == 5:
-                    promo_to_create = {'percentage': 10, 'max_discount': 50000}
-                elif delivered_count == 10:
-                    promo_to_create = {'percentage': 15, 'max_discount': 100000}
-                elif delivered_count == 20:
-                    promo_to_create = {'percentage': 20, 'max_discount': 200000}
-                elif delivered_count >= 20 and delivered_count % 10 == 0:
+                promo_milestones = {
+                    1: {'percentage': 5, 'max_discount': 30000},
+                    5: {'percentage': 10, 'max_discount': 50000},
+                    10: {'percentage': 15, 'max_discount': 100000},
+                    20: {'percentage': 20, 'max_discount': 200000},
+                }
+                promo_to_create = promo_milestones.get(delivered_count)
+                if promo_to_create is None and delivered_count > 20 and delivered_count % 10 == 0:
                     promo_to_create = {'percentage': 20, 'max_discount': 200000}
 
                 if promo_to_create:
-                    from decimal import Decimal
-                    import uuid
-
                     PromoCode.objects.create(
-                        code=str(uuid.uuid4()).replace('-', '').upper()[:16],
+                        code=uuid.uuid4().hex.upper()[:16],
                         customer_id=order.customer_id,
                         percentage=Decimal(str(promo_to_create['percentage'])),
                         max_discount_amount=Decimal(str(promo_to_create['max_discount'])),
                         status=PromoCode.Status.UNUSED,
                     )
-        else:
-            order.save(update_fields=['status', 'shipping_status'])
 
         return Response(OrderSerializer(order).data)
 

@@ -12,6 +12,8 @@ class Order(models.Model):
         SHIPMENT_CREATED = 'SHIPMENT_CREATED', 'Shipment Created'
         SHIPMENT_RESERVED = 'SHIPMENT_RESERVED', 'Shipment Reserved'
         CONFIRMED = 'CONFIRMED', 'Confirmed'
+        SHIPPING = 'SHIPPING', 'Shipping'
+        DELIVERED = 'DELIVERED', 'Delivered'
         FAILED = 'FAILED', 'Failed'
         COMPENSATING = 'COMPENSATING', 'Compensating'
         COMPENSATED = 'COMPENSATED', 'Compensated'
@@ -88,6 +90,10 @@ class PromoCode(models.Model):
     class Meta:
         db_table = 'promo_codes'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['customer_id', 'status'], name='promo_customer_status_idx'),
+            models.Index(fields=['code', 'customer_id'], name='promo_code_customer_idx'),
+        ]
 
     def __str__(self):
         return f'PromoCode(code={self.code}, customer_id={self.customer_id}, status={self.status})'
