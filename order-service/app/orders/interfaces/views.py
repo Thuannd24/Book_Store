@@ -175,7 +175,7 @@ class OrderStatusUpdateView(APIView):
                 # Issue new promo codes based on delivered order count
                 delivered_count = Order.objects.filter(
                     customer_id=order.customer_id,
-                    status=Order.Status.DELIVERED,
+                    shipping_status='DELIVERED',
                 ).count()
 
                 promo_milestones = {
