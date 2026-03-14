@@ -45,5 +45,5 @@ class CreateOrderSerializer(serializers.Serializer):
     payment_method = serializers.ChoiceField(choices=['COD', 'BANK_TRANSFER'])
     shipping_method = serializers.ChoiceField(choices=['STANDARD', 'EXPRESS'])
     shipping_address = serializers.CharField(max_length=1024)
-    shipping_fee = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default='0.00')
+    shipping_fee = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default='0.00', min_value=0)
     promo_code = serializers.CharField(max_length=64, required=False, allow_blank=True)
