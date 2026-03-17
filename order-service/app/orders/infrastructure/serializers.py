@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .orm_models import Order, OrderItem
+from .orm_models import Order, OrderItem, PromoCode
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -47,3 +47,9 @@ class CreateOrderSerializer(serializers.Serializer):
     shipping_address = serializers.CharField(max_length=1024)
     shipping_fee = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default='0.00', min_value=0)
     promo_code = serializers.CharField(max_length=64, required=False, allow_blank=True)
+
+
+class PromoCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromoCode
+        fields = ['code', 'percentage', 'max_discount_amount', 'valid_from', 'valid_to']
