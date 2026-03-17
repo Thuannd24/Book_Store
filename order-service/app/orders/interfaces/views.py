@@ -8,9 +8,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django.db import connection, transaction
+from django.db.models import Q
+from django.utils import timezone
 
 from orders.infrastructure.orm_models import Order, OrderItem, PromoCode
-from orders.infrastructure.serializers import OrderSerializer, CreateOrderSerializer
+from orders.infrastructure.serializers import OrderSerializer, CreateOrderSerializer, PromoCodeSerializer
 from orders.application.services import OrderSaga
 
 
@@ -92,27 +94,23 @@ class OrderByCustomerView(APIView):
 class CustomerPromoListView(APIView):
     """
     GET /api/customers/{customer_id}/promos/
-    Returns all promo codes for a customer that are still usable (UNUSED or RETURNED).
+    Returns promo codes for a customer that are usable (UNUSED or RETURNED)
+    and within their valid date range.
     """
 
     def get(self, request, customer_id):
+        now = timezone.now()
         promos = PromoCode.objects.filter(
             customer_id=customer_id,
             status__in=[PromoCode.Status.UNUSED, PromoCode.Status.RETURNED],
+        ).filter(
+            Q(valid_from__isnull=True) | Q(valid_from__lte=now)
+        ).filter(
+            Q(valid_to__isnull=True) | Q(valid_to__gte=now)
         ).order_by('-created_at')
 
-        data = [
-            {
-                'code': p.code,
-                'percentage': float(p.percentage),
-                'max_discount_amount': float(p.max_discount_amount),
-                'status': p.status,
-                'valid_from': p.valid_from,
-                'valid_to': p.valid_to,
-            }
-            for p in promos
-        ]
-        return Response({'customer_id': customer_id, 'promos': data})
+        serializer = PromoCodeSerializer(promos, many=True)
+        return Response({'customer_id': customer_id, 'promos': serializer.data})
 
 
 class OrderStatusUpdateView(APIView):
