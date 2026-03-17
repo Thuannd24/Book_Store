@@ -51,6 +51,7 @@ class OrderCreateView(APIView):
             shipping_method=data['shipping_method'],
             shipping_address=data['shipping_address'],
             shipping_fee=data.get('shipping_fee', '0.00'),
+            promo_code=data.get('promo_code') or None,
         )
 
         order, error, http_status = saga.run()
