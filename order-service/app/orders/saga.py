@@ -64,6 +64,8 @@ class OrderSaga:
         self.shipping_method = shipping_method
         self.shipping_address = shipping_address
         self.shipping_fee = Decimal(str(shipping_fee))
+        if self.shipping_fee < 0:
+            raise ValueError("Shipping fee must be non-negative")
         self.order = None
         self.payment_id = None
         self.shipment_id = None
@@ -85,36 +87,37 @@ class OrderSaga:
         total_amount = Decimal(str(cart['total_amount'])) + self.shipping_fee
 
         discount_amount = Decimal('0.00')
-        if self.promo_code_str:
-            try:
-                promo = PromoCode.objects.select_for_update().get(
-                    code=self.promo_code_str,
-                    customer_id=self.customer_id,
-                    status__in=[PromoCode.Status.UNUSED, PromoCode.Status.RETURNED],
-                )
-            except PromoCode.DoesNotExist:
-                return None, 'Invalid or unavailable promo code.', 400
-
-            self.applied_promo = promo
-
-            # Basic validity window check if configured
-            from django.utils import timezone
-
-            now = timezone.now()
-            if promo.valid_from and promo.valid_from > now:
-                return None, 'Promo code is not yet valid.', 400
-            if promo.valid_to and promo.valid_to < now:
-                return None, 'Promo code has expired.', 400
-
-            percentage = promo.percentage / Decimal('100')
-            raw_discount = (Decimal(str(cart['total_amount'])) * percentage).quantize(Decimal('0.01'))
-            max_discount = promo.max_discount_amount
-            discount_amount = min(raw_discount, max_discount)
-            total_amount = (total_amount - discount_amount).quantize(Decimal('0.01'))
 
         # Step 1: CREATE_ORDER
         try:
             with transaction.atomic():
+                if self.promo_code_str:
+                    try:
+                        promo = PromoCode.objects.select_for_update().get(
+                            code=self.promo_code_str,
+                            customer_id=self.customer_id,
+                            status__in=[PromoCode.Status.UNUSED, PromoCode.Status.RETURNED],
+                        )
+                    except PromoCode.DoesNotExist:
+                        return None, 'Invalid or unavailable promo code.', 400
+
+                    self.applied_promo = promo
+
+                    # Basic validity window check if configured
+                    from django.utils import timezone
+
+                    now = timezone.now()
+                    if promo.valid_from and promo.valid_from > now:
+                        return None, 'Promo code is not yet valid.', 400
+                    if promo.valid_to and promo.valid_to < now:
+                        return None, 'Promo code has expired.', 400
+
+                    percentage = promo.percentage / Decimal('100')
+                    raw_discount = (total_amount * percentage).quantize(Decimal('0.01'))
+                    max_discount = promo.max_discount_amount
+                    discount_amount = min(raw_discount, max_discount)
+                    total_amount = (total_amount - discount_amount).quantize(Decimal('0.01'))
+
                 self.order = Order.objects.create(
                     customer_id=self.customer_id,
                     cart_id=cart['id'],
@@ -134,7 +137,7 @@ class OrderSaga:
                         book_title_snapshot=item['book_title_snapshot'],
                         price_snapshot=Decimal(str(item['price_snapshot'])),
                         quantity=item['quantity'],
-                        subtotal=Decimal(str(item['subtotal'])),
+                        subtotal=Decimal(str(item['subtotal'])).quantize(Decimal('0.01')),
                     )
                     for item in items
                 ]
