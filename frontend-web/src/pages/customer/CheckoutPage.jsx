@@ -34,9 +34,35 @@ export default function CheckoutPage() {
 
   const shippingFee = form.shipping_method === 'EXPRESS' ? 50000 : 20000
 
+  const calculateDiscount = (cartTotal, promoCode, promoList) => {
+    if (!promoCode || !promoList || promoList.length === 0) return 0
+    const promo = promoList.find((p) => p.code === promoCode)
+    if (!promo) return 0
+    const now = new Date()
+    if (promo.valid_from && new Date(promo.valid_from) > now) return 0
+    if (promo.valid_to && new Date(promo.valid_to) < now) return 0
+    const percentage = parseFloat(promo.percentage) || 0
+    const maxDiscount = parseFloat(promo.max_discount_amount) || 0
+    if (percentage <= 0 || maxDiscount <= 0) return 0
+    const rawDiscount = cartTotal * (percentage / 100)
+    return Math.min(rawDiscount, maxDiscount)
+  }
+
+  const validatePromo = () => {
+    if (!form.promo_code) return null
+    const promo = promos.find((p) => p.code === form.promo_code)
+    if (!promo) return 'Promo code not found'
+    const now = new Date()
+    if (promo.valid_from && new Date(promo.valid_from) > now) return 'Promo code is not yet valid'
+    if (promo.valid_to && new Date(promo.valid_to) < now) return 'Promo code has expired'
+    return null
+  }
+
   const validate = () => {
     const e = {}
     if (!form.shipping_address.trim()) e.shipping_address = 'Shipping address is required'
+    const promoErr = validatePromo()
+    if (promoErr) e.promo_code = promoErr
     return e
   }
 
@@ -70,7 +96,8 @@ export default function CheckoutPage() {
 
   const items = cart?.items || []
   const subtotal = parseFloat(cart?.total_amount || 0)
-  const total = subtotal + shippingFee
+  const discount = calculateDiscount(subtotal, form.promo_code, promos)
+  const total = subtotal + shippingFee - discount
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -155,6 +182,12 @@ export default function CheckoutPage() {
                   <span>Shipping</span>
                   <span>{formatCurrency(shippingFee)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-red-600">
+                    <span>Discount</span>
+                    <span>−{formatCurrency(discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold text-gray-800 text-base border-t pt-2 mt-1">
                   <span>Total</span>
                   <span className="text-indigo-700">{formatCurrency(total)}</span>
