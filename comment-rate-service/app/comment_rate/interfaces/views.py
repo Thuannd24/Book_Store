@@ -1,16 +1,44 @@
-from django.db.models import Avg, Count
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from comment_rate.infrastructure.orm_models import Review
 from comment_rate.infrastructure.serializers import ReviewSerializer
+from comment_rate.infrastructure.mongo import (
+    check_mongo_health,
+    ensure_indexes,
+    get_next_review_id,
+    get_reviews_collection,
+    now_utc,
+)
+
+
+ACTIVE_STATUS = 'ACTIVE'
+
+
+def _serialize_review(doc):
+    return {
+        'id': doc.get('id'),
+        'book_id': doc.get('book_id'),
+        'customer_id': doc.get('customer_id'),
+        'rating': doc.get('rating'),
+        'comment': doc.get('comment', ''),
+        'status': doc.get('status', ACTIVE_STATUS),
+        'created_at': doc.get('created_at'),
+    }
 
 
 @api_view(['GET'])
 def health(request):
-    return Response({'status': 'ok', 'service': 'comment-rate-service'})
+    ok = check_mongo_health()
+    return Response(
+        {
+            'status': 'ok' if ok else 'degraded',
+            'service': 'comment-rate-service',
+            'mongo': 'ok' if ok else 'error',
+        },
+        status=200 if ok else 503,
+    )
 
 
 class ReviewCreateView(APIView):
@@ -20,10 +48,23 @@ class ReviewCreateView(APIView):
 
     def post(self, request):
         serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            review = serializer.save(status=Review.Status.ACTIVE)
-            return Response(ReviewSerializer(review).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        ensure_indexes()
+        data = serializer.validated_data
+        review_doc = {
+            'id': get_next_review_id(),
+            'book_id': data['book_id'],
+            'customer_id': data['customer_id'],
+            'rating': data['rating'],
+            'comment': data.get('comment', ''),
+            'status': ACTIVE_STATUS,
+            'created_at': now_utc(),
+        }
+        get_reviews_collection().insert_one(review_doc)
+
+        return Response(ReviewSerializer(_serialize_review(review_doc)).data, status=status.HTTP_201_CREATED)
 
 
 class ReviewsByBookView(APIView):
@@ -32,8 +73,15 @@ class ReviewsByBookView(APIView):
     """
 
     def get(self, request, book_id):
-        reviews = Review.objects.filter(book_id=book_id, status=Review.Status.ACTIVE)
-        return Response(ReviewSerializer(reviews, many=True).data)
+        ensure_indexes()
+        reviews = list(
+            get_reviews_collection().find(
+                {'book_id': int(book_id), 'status': ACTIVE_STATUS},
+                {'_id': 0},
+            ).sort('created_at', -1)
+        )
+        payload = [ReviewSerializer(_serialize_review(doc)).data for doc in reviews]
+        return Response(payload)
 
 
 class ReviewsByCustomerView(APIView):
@@ -42,8 +90,15 @@ class ReviewsByCustomerView(APIView):
     """
 
     def get(self, request, customer_id):
-        reviews = Review.objects.filter(customer_id=customer_id, status=Review.Status.ACTIVE)
-        return Response(ReviewSerializer(reviews, many=True).data)
+        ensure_indexes()
+        reviews = list(
+            get_reviews_collection().find(
+                {'customer_id': int(customer_id), 'status': ACTIVE_STATUS},
+                {'_id': 0},
+            ).sort('created_at', -1)
+        )
+        payload = [ReviewSerializer(_serialize_review(doc)).data for doc in reviews]
+        return Response(payload)
 
 
 class BookAverageView(APIView):
@@ -53,12 +108,18 @@ class BookAverageView(APIView):
     """
 
     def get(self, request, book_id):
-        agg = Review.objects.filter(book_id=book_id, status=Review.Status.ACTIVE).aggregate(
-            average_rating=Avg('rating'), review_count=Count('id')
-        )
-        average = agg['average_rating'] or 0
-        count = agg['review_count'] or 0
-        return Response({'book_id': book_id, 'average_rating': round(average, 2), 'review_count': count})
+        ensure_indexes()
+        pipeline = [
+            {'$match': {'book_id': int(book_id), 'status': ACTIVE_STATUS}},
+            {'$group': {'_id': None, 'average_rating': {'$avg': '$rating'}, 'review_count': {'$sum': 1}}},
+        ]
+        result = list(get_reviews_collection().aggregate(pipeline))
+        if not result:
+            return Response({'book_id': int(book_id), 'average_rating': 0, 'review_count': 0})
+
+        average = round(float(result[0].get('average_rating') or 0), 2)
+        count = int(result[0].get('review_count') or 0)
+        return Response({'book_id': int(book_id), 'average_rating': average, 'review_count': count})
 
 
 class BooksSummaryAveragesView(APIView):
@@ -69,15 +130,23 @@ class BooksSummaryAveragesView(APIView):
     """
 
     def get(self, request):
-        qs = (
-            Review.objects.filter(status=Review.Status.ACTIVE)
-            .values('book_id')
-            .annotate(average_rating=Avg('rating'), review_count=Count('id'))
-        )
+        ensure_indexes()
+        pipeline = [
+            {'$match': {'status': ACTIVE_STATUS}},
+            {
+                '$group': {
+                    '_id': '$book_id',
+                    'average_rating': {'$avg': '$rating'},
+                    'review_count': {'$sum': 1},
+                }
+            },
+            {'$sort': {'_id': 1}},
+        ]
+        qs = list(get_reviews_collection().aggregate(pipeline))
         payload = [
             {
-                'book_id': row['book_id'],
-                'average_rating': round(row['average_rating'], 2),
+                'book_id': int(row['_id']),
+                'average_rating': round(float(row['average_rating']), 2),
                 'review_count': row['review_count'],
             }
             for row in qs

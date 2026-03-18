@@ -10,6 +10,8 @@ for env_path in (BASE_DIR / '.env', BASE_DIR.parent / '.env'):
 SECRET_KEY = env('SECRET_KEY', default='change-me-in-production')
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+MONGO_URI = env('MONGO_URI', default='mongodb://localhost:27017')
+MONGO_DB_NAME = env('MONGO_DB_NAME', default='comment_rate_db')
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',

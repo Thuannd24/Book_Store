@@ -7,6 +7,6 @@ until python manage.py shell -c "from django.db import connections; connections[
 done
 
 python manage.py makemigrations --noinput
-python manage.py migrate --noinput
+python manage.py migrate --noinput --fake-initial
 
 exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3

@@ -72,6 +72,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: "2604"
 
+  comment-rate-mongo:
+    image: mongo:7
+
   recommender-db:
     image: postgres:15-alpine
     environment:
@@ -105,7 +108,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       JWT_AUTH_ENABLED: "false"
       RATE_LIMIT_ENABLED: "true"
-      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000,http://35.175.245.212,http://35.175.245.212:3000,http://35.175.245.212:8080  
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3001,http://127.0.0.1:3001,http://35.175.245.212,http://35.175.245.212:3001,http://35.175.245.212:8080
     depends_on:
       - staff-service
       - manager-service
@@ -125,7 +128,7 @@ services:
   staff-service:
     build: ./staff-service
     ports:
-      - "8081:8000"
+      - "8093:8000"
     environment:
       DATABASE_URL: postgres://postgres:2604@staff-db:5432/staff_db
     depends_on:
@@ -134,7 +137,7 @@ services:
   manager-service:
     build: ./manager-service
     ports:
-      - "8082:8000"
+      - "8094:8000"
     environment:
       DATABASE_URL: postgres://postgres:2604@manager-db:5432/manager_db
       CUSTOMER_SERVICE_URL: http://customer-service:8000
@@ -225,8 +228,11 @@ services:
     ports:
       - "8090:8000"
     environment:
-      DATABASE_URL: postgres://postgres:2604@comment-rate-db:5432/comment_rate_db
+      MONGO_URI: mongodb://comment-rate-mongo:27017
+      MONGO_DB_NAME: comment_rate_db
+      POSTGRES_MIGRATION_URL: postgres://postgres:2604@comment-rate-db:5432/comment_rate_db
     depends_on:
+      - comment-rate-mongo
       - comment-rate-db
 
   recommender-ai-service:
@@ -296,9 +302,9 @@ services:
     build:
       context: ./frontend-web
       args:
-        VITE_API_BASE_URL: http://35.175.245.212:8080
+        VITE_API_BASE_URL: http://localhost:8080
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - api-gateway
 
