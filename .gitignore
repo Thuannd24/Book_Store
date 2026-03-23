@@ -15,6 +15,9 @@ secrets/
 *.pyc
 __pycache__/
 **/migrations/
+!order-service/app/orders/migrations/
+!order-service/app/orders/migrations/__init__.py
+!order-service/app/orders/migrations/*.py
 *.log
 # ===========================================
 # Python

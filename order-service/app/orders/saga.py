@@ -206,6 +206,10 @@ class OrderSaga:
             'order_id': self.order.id,
             'customer_id': self.customer_id,
             'total_amount': str(total_amount),
+            'items': [
+                {'book_id': item.book_id, 'quantity': item.quantity}
+                for item in self.order.items.all()
+            ]
         })
 
         # Clear cart best-effort

@@ -68,6 +68,8 @@ AUTH_SERVICE_URL = env('AUTH_SERVICE_URL', default='http://auth-service:8000')
 # Feature flags
 JWT_AUTH_ENABLED = env.bool('JWT_AUTH_ENABLED', default=False)
 RATE_LIMIT_ENABLED = env.bool('RATE_LIMIT_ENABLED', default=False)
+RATE_LIMIT = env.int('RATE_LIMIT', default=100)
+RATE_LIMIT_WINDOW = env.int('RATE_LIMIT_WINDOW', default=60)
 
 # Cache (Redis or LocMem fallback)
 REDIS_URL = env('REDIS_URL', default='')

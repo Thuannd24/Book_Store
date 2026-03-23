@@ -160,12 +160,9 @@ class JWTAuthMiddleware:
 
 class RateLimitMiddleware:
     """
-    Simple rate limiting: 100 requests per minute per IP.
+    Simple rate limiting (configurable via settings).
     Uses Django cache (Redis or LocMem).
     """
-
-    RATE_LIMIT = 100  # requests
-    WINDOW = 60       # seconds
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -174,6 +171,9 @@ class RateLimitMiddleware:
         if not getattr(settings, 'RATE_LIMIT_ENABLED', False):
             return self.get_response(request)
 
+        rate_limit = getattr(settings, 'RATE_LIMIT', 100)
+        window = getattr(settings, 'RATE_LIMIT_WINDOW', 60)
+
         ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
         ip = ip.split(',')[0].strip()
         # Sanitize IP for use as cache key (replace chars not valid in memcache keys)
@@ -181,10 +181,10 @@ class RateLimitMiddleware:
         cache_key = f'rl:{safe_ip}'
 
         current = cache.get(cache_key, 0)
-        if current >= self.RATE_LIMIT:
+        if current >= rate_limit:
             return JsonResponse({'detail': 'Rate limit exceeded. Try again later.'}, status=429)
 
-        cache.set(cache_key, current + 1, timeout=self.WINDOW)
+        cache.set(cache_key, current + 1, timeout=window)
         return self.get_response(request)
 
 
